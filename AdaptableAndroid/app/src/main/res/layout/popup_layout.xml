@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/popup_element"
+    android:background="#444444"
+    android:padding="10px"
+    android:orientation="vertical">
+
+    <!--style="@style/PageHeader"-->
+        <TextView android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text= "Transferring Data"
+            android:textColor="#FFF"
+            />
+
+    <!-- style="@style/Header"-->
+        <TextView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="Status"
+            android:textColor="#FFF"/>
+
+        <TextView android:id="@+id/server_status_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Awaiting Answer..."
+            android:paddingLeft="10sp"
+            android:textColor="#FFF"/>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal|bottom">
+
+                <!-- style="@style/Button"-->
+            <!--android:drawableLeft="@drawable/stop_button"-->
+            <!--android:drawablePadding="3sp"-->
+                <Button android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:id="@+id/end_data_send_button"
+                    android:layout_centerHorizontal="true"
+                    android:text="Cancel"
+                    />
+
+        </LinearLayout>
+
+
+
+
+
+</LinearLayout>

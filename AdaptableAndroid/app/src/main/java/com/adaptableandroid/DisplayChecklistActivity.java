@@ -6,13 +6,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +30,7 @@ import java.util.List;
 public class DisplayChecklistActivity extends Activity {
     MyAdapter adapt;
     List<Task> mylist;
+    PopupWindow pw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -50,6 +56,13 @@ public class DisplayChecklistActivity extends Activity {
         mylist.add(second);
         mylist.add(third);
 
+        for(Integer i = 0; i < 15; i++ ){
+            String newTask = "Task " + i;
+            Task n = new Task(newTask, 0);
+            mylist.add(n);
+            System.out.println("printed " + newTask);
+        }
+
 
         adapt = new MyAdapter(this, R.layout.list_inner_view, mylist);
         ListView listTask = (ListView) findViewById(R.id.listView1);
@@ -62,6 +75,32 @@ public class DisplayChecklistActivity extends Activity {
         //getMenuInflater().inflate(R.menu.);
         return true;
     }*/
+
+    private void initiatePopupWindow(){
+        try{
+            // We need to get the instance of the LayoutInflater, use the context of this activity
+            LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+            //Inflate the view from a predefined XML layout
+            View layout = inflater.inflate(R.layout.popup_layout, (ViewGroup) findViewById(R.id.popup_element));
+
+            // create a 300px width and 470px height PopupWindow
+            pw = new PopupWindow(layout, 300, 470, true);
+            pw.showAtLocation(layout, Gravity.CENTER, 0,0);
+
+            TextView mResultText = (TextView) layout.findViewById(R.id.server_status_text);
+            Button cancelButton = (Button) layout.findViewById(R.id.end_data_send_button);
+            cancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    pw.dismiss();
+                }
+            });
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
     private class MyAdapter extends ArrayAdapter<Task>{
         Context context;
@@ -77,12 +116,20 @@ public class DisplayChecklistActivity extends Activity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
-            CheckBox chk = null;
+            CheckBox chk;
+            Button info;
+            LayoutInflater inflater;
+
 
             if (convertView == null){
-                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
                 convertView = inflater.inflate(R.layout.list_inner_view, parent, false);
                 chk = (CheckBox) convertView.findViewById(R.id.checkBox1);
+
+                info = (Button) convertView.findViewById(R.id.infoButton);
+                convertView.setTag(chk);
+
 
                 chk.setOnClickListener(new View.OnClickListener(){
                     @Override
@@ -93,16 +140,29 @@ public class DisplayChecklistActivity extends Activity {
                         if(cb.isChecked()){cb.setTextColor(0xFF00FF00);}
                         else{cb.setTextColor(0xFFFF0000);}
                         Toast.makeText(getApplicationContext(), "Clicked on that one checkbox: " + cb.getText() + " is "
-                                        + cb.isChecked(), Toast.LENGTH_LONG).show();
+                                + cb.isChecked(), Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                info.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v){
+                        initiatePopupWindow();
                     }
                 });
             }
             else{
                 chk = (CheckBox) convertView.getTag();
+                //info = (Button) convertView.getTag();
+                //inflater = LayoutInflater.from(context);
             }
 
             Task current = taskList.get(position);
-            if(chk != null){
+
+            if(chk != null && current != null){
+
+
+                System.out.println("current = " + current.getName());
                 chk.setText(current.getName());
                 chk.setChecked(current.getStatus()==1?true:false);
                 chk.setTag(current);
