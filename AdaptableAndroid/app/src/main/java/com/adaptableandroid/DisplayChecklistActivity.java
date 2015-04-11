@@ -165,6 +165,8 @@ public class DisplayChecklistActivity extends Activity {
                 System.out.println("current = " + current.getName());
                 chk.setText(current.getName());
                 chk.setChecked(current.getStatus()==1?true:false);
+                if(chk.isChecked()){chk.setTextColor(0xFF00FF00);}
+                else{chk.setTextColor(0xFFFF0000);}
                 chk.setTag(current);
                 Log.d("listener", String.valueOf(current.getId()));
             }
