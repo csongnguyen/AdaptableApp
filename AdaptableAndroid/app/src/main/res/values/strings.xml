@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">AdaptableAndroid</string>
+    <string name="title">AdaptableTitle</string>
     <string name="buttonChecklist">Earthquakes ></string>
     <string name="checkBox1">CheckBox</string>
     <string name="infoButton">More Info</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_locations">Check Locations</string>
 </resources>

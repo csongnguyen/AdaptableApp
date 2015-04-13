@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Created by Connie on 4/6/2015.
  */
-public class DisplayChecklistActivity extends Activity {
+public class DisplayChecklistActivity extends ActionBarActivity {
     MyAdapter adapt;
     List<Task> mylist;
     PopupWindow pw;
@@ -39,13 +39,9 @@ public class DisplayChecklistActivity extends Activity {
         String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         setContentView(R.layout.activity_display_checklist);
 
-        // Create the text view
-        TextView textView = new TextView(this);
-        textView.setTextSize(40);
-        textView.setText(message);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Set the text view as the activity layout
-        //setContentView(textView);
+
 
         // get the list of tasks
         mylist = new ArrayList<Task>();
