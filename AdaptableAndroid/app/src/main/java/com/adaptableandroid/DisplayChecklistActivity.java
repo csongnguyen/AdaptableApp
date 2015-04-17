@@ -17,6 +17,7 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +32,8 @@ public class DisplayChecklistActivity extends ActionBarActivity {
     MyAdapter adapt;
     List<Task> mylist;
     PopupWindow pw;
+    int numberCompleted = 0;
+    ProgressBar pbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -63,6 +66,8 @@ public class DisplayChecklistActivity extends ActionBarActivity {
         adapt = new MyAdapter(this, R.layout.list_inner_view, mylist);
         ListView listTask = (ListView) findViewById(R.id.listView1);
         listTask.setAdapter(adapt);
+        pbar = (ProgressBar) findViewById(R.id.progressBarChecklist);
+        pbar.setMax(mylist.size());
     }
 
    /* @Override
@@ -110,6 +115,8 @@ public class DisplayChecklistActivity extends ActionBarActivity {
             this.context = context;
         }
 
+
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
             CheckBox chk;
@@ -135,8 +142,25 @@ public class DisplayChecklistActivity extends ActionBarActivity {
                         changeTask.setStatus(cb.isChecked() == true ? 1:0);
                         if(cb.isChecked()){cb.setTextColor(0xFF00FF00);}
                         else{cb.setTextColor(0xFFFF0000);}
-                        Toast.makeText(getApplicationContext(), "Clicked on that one checkbox: " + cb.getText() + " is "
-                                + cb.isChecked(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getApplicationContext(), "Clicked on that one checkbox: " + cb.getText() + " is "
+//                                + cb.isChecked(), Toast.LENGTH_LONG).show();
+
+
+                        int maxList = pbar.getMax();
+                        if(numberCompleted < maxList && cb.isChecked()){
+                            numberCompleted++;
+                            pbar.setProgress(numberCompleted);
+                            if(numberCompleted == maxList){
+                                Toast.makeText(getApplicationContext(), "Congratulations, "
+                                        + "you're done!", Toast.LENGTH_LONG).show();
+                            }
+                        }else if(!cb.isChecked()){
+                            numberCompleted--;
+                            pbar.setProgress(numberCompleted);
+                        }
+
+
+
                     }
                 });
 

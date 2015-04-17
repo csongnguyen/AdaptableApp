@@ -14,9 +14,8 @@
         <!-- Splash screen -->
         <activity
             android:name="com.adaptableandroid.SplashScreen"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
+            <!-- android:label="@string/app_name" -->
             <!--android:theme="@android:style/Theme.Black.NoTitleBar"-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,11 +26,12 @@
 
         <!-- Main Activity -->
         <activity
-            android:name="com.adaptableandroid.MainActivity"
-            android:label="@string/app_name">
+            android:name="com.adaptableandroid.MainActivity">
+            <!--android:label="@string/app_name"-->
 
         </activity>
 
+        <!-- Display Checklist Activity -->
         <activity android:name="com.adaptableandroid.DisplayChecklistActivity"
             android:label="My Message"
             android:parentActivityName="com.adaptableandroid.MainActivity">
