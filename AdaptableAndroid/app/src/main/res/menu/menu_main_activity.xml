@@ -18,8 +18,4 @@
         android:title="@string/action_checklists"
         myapp:showAsAction="ifRoom|collapseActionView" />
 
-    <item android:id="@+id/action_locations"
-        android:title="@string/action_locations"
-        myapp:showAsAction="ifRoom|collapseActionView" />
-
 </menu>

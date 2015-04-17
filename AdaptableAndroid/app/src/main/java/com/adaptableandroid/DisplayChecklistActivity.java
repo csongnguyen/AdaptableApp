@@ -1,5 +1,9 @@
 package com.adaptableandroid;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -24,6 +29,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.Inflater;
 
 /**
  * Created by Connie on 4/6/2015.
@@ -103,6 +109,36 @@ public class DisplayChecklistActivity extends ActionBarActivity {
         }
     }
 
+    private void showCompletionAnimation(){
+        //Custom animation on image
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.completion_screen_image,(ViewGroup) findViewById(R.id.completion_animation));
+
+        // create a 300px width and 470px height PopupWindow
+        pw = new PopupWindow(layout, 100, 100, true);
+        pw.showAtLocation(layout, Gravity.CENTER, 0,0);
+
+        //ImageView myView =  (ImageView) layout.findViewById(R.id.completion_icon);
+
+        ObjectAnimator fadeOut = ObjectAnimator.ofFloat(layout, "alpha", 1f, .3f);
+        fadeOut.setDuration(500);
+        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(layout, "alpha", .3f, 1f);
+        fadeIn.setDuration(200);
+
+        final AnimatorSet mAnimationSet = new AnimatorSet();
+
+        mAnimationSet.play(fadeOut).after(fadeIn);
+
+        mAnimationSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                pw.dismiss();
+            }
+        });
+        mAnimationSet.start();
+    }
+
     private class MyAdapter extends ArrayAdapter<Task>{
         Context context;
         List<Task> taskList = new ArrayList<Task>();
@@ -150,6 +186,7 @@ public class DisplayChecklistActivity extends ActionBarActivity {
                         if(numberCompleted < maxList && cb.isChecked()){
                             numberCompleted++;
                             pbar.setProgress(numberCompleted);
+                            showCompletionAnimation();
                             if(numberCompleted == maxList){
                                 Toast.makeText(getApplicationContext(), "Congratulations, "
                                         + "you're done!", Toast.LENGTH_LONG).show();

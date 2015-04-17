@@ -5,11 +5,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -38,13 +40,25 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 //       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayShowHomeEnabled(false);
+        actionbar.setDisplayHomeAsUpEnabled(false);
+        actionbar.setDisplayShowCustomEnabled(true);
+        actionbar.setDisplayShowTitleEnabled(false);
+        actionbar.setBackgroundDrawable(new ColorDrawable(0xff353538));
+        //actionbar.setIcon(R.drawable.ic_action_search);
+
+        LayoutInflater inflator = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflator.inflate(R.layout.custom_menu, null);
+        actionbar.setCustomView(view);
+        actionbar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main_activity, menu);
+        //getMenuInflater().inflate(R.menu.menu_main_activity, menu);
         return true;
     }
 
@@ -60,8 +74,12 @@ public class MainActivity extends ActionBarActivity {
             createNotification();
             return true;
         }
-        else if(id == R.id.action_locations){
+        else if(id == R.id.action_warnings){
             checkLocation();
+            return true;
+        }
+        else if(id == R.id.action_checklists){
+            // TO-DO
             return true;
         }
 
@@ -72,6 +90,11 @@ public class MainActivity extends ActionBarActivity {
         Intent intent = new Intent(this, DisplayChecklistActivity.class);
         intent.putExtra(EXTRA_MESSAGE, "Hello, there");
         startActivity(intent);
+
+    }
+
+    public void createNotification(View view){
+        createNotification();
     }
 
     /*http://www.vogella.com/tutorials/AndroidNotifications/article.html*/
@@ -117,20 +140,40 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    public void checkLocation(View view){
+        checkLocation();
+    }
+
     public void checkLocation(){
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if(locationManager != null){
 
-            boolean gpsIsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
 //            Location location_gps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 //            Location location_network = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-//            bool isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-//            bool isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            if(gpsIsEnabled){
+            boolean gpsIsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            System.out.println("Got a location manager");
+            if(isNetworkEnabled | gpsIsEnabled){
                 Criteria criteria = new Criteria();
                 bestProvider = locationManager.getBestProvider(criteria, false);
                 Location currentLocation = locationManager.getLastKnownLocation(bestProvider);
-                location = currentLocation.getLatitude() + " " + currentLocation.getLongitude();
+                if(isNetworkEnabled){
+                    System.out.println("network is enabled.");
+                    currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                }
+                else if(gpsIsEnabled){
+                    System.out.println("gps is enabled");
+                    currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                }
+
+
+                try{
+                    location = currentLocation.getLatitude() + " " + currentLocation.getLongitude();
+                }catch(Exception e){
+                    location = "Cannot get location";
+                }
+
 
 
 
@@ -148,8 +191,8 @@ public class MainActivity extends ActionBarActivity {
                     pw.showAtLocation(layout, Gravity.CENTER, 0,0);
 
                     // Create the text view
-                    TextView mResultText = new TextView(this);
-                    mResultText.setTextSize(40);
+                    TextView mResultText = (TextView) layout.findViewById(R.id.server_status_text);
+                    //mResultText.setTextSize(40);
                     mResultText.setText(location);
 //            TextView mResultText = (TextView) layout.findViewById(R.id.server_status_text);
                     Button cancelButton = (Button) layout.findViewById(R.id.end_data_send_button);
