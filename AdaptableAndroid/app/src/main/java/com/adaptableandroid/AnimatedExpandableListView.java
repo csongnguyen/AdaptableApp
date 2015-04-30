@@ -37,6 +37,8 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 
 /**
+ * original github:https://github.com/idunnololz/AnimatedExpandableListView
+ * Added some changes from this merge https://github.com/jegumi/AnimatedExpandableListView/commit/eca9d8c66c5c97628c73631f5513cf0195b22bf3
  * This class defines an ExpandableListView which supports animations for
  * collapsing and expanding groups.
  */
@@ -115,6 +117,9 @@ public class AnimatedExpandableListView extends ExpandableListView {
      * The duration of the expand/collapse animations
      */
     private static final int ANIMATION_DURATION = 300;
+    private static final int ANIMATION_DURATION_TOTAL = 300;
+    private static final int ANIMATION_DURATION_PER_ELEMENT = 100;
+    private static final int NUM_ELEMENTS_FOR_TOTAL_ANIMATION  = 3;
 
     private AnimatedExpandableListAdapter adapter;
 
@@ -154,7 +159,8 @@ public class AnimatedExpandableListView extends ExpandableListView {
     @SuppressLint("NewApi")
     public boolean expandGroupWithAnimation(int groupPos) {
         boolean lastGroup = groupPos == adapter.getGroupCount() - 1;
-        if (lastGroup && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+//        if (lastGroup && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+        if (lastGroup && Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             return expandGroup(groupPos, true);
         }
 
@@ -234,6 +240,11 @@ public class AnimatedExpandableListView extends ExpandableListView {
 
     private int getAnimationDuration() {
         return ANIMATION_DURATION;
+    }
+    private int getAnimationDuration(int numberElements) {
+        return numberElements >= NUM_ELEMENTS_FOR_TOTAL_ANIMATION
+                        ? ANIMATION_DURATION_TOTAL
+                        : ANIMATION_DURATION_PER_ELEMENT * numberElements;
     }
 
     /**
@@ -443,7 +454,8 @@ public class AnimatedExpandableListView extends ExpandableListView {
 
                 if (info.expanding && state != STATE_EXPANDING) {
                     ExpandAnimation ani = new ExpandAnimation(dummyView, 0, totalHeight, info);
-                    ani.setDuration(this.parent.getAnimationDuration());
+//                    ani.setDuration(this.parent.getAnimationDuration());
+                    ani.setDuration(this.parent.getAnimationDuration(len));
                     ani.setAnimationListener(new AnimationListener() {
 
                         @Override
@@ -468,7 +480,8 @@ public class AnimatedExpandableListView extends ExpandableListView {
                     }
 
                     ExpandAnimation ani = new ExpandAnimation(dummyView, info.dummyHeight, 0, info);
-                    ani.setDuration(this.parent.getAnimationDuration());
+//                    ani.setDuration(this.parent.getAnimationDuration());
+                    ani.setDuration(this.parent.getAnimationDuration(len));
                     ani.setAnimationListener(new AnimationListener() {
 
                         @Override
