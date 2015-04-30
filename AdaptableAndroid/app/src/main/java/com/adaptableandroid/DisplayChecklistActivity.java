@@ -50,8 +50,6 @@ public class DisplayChecklistActivity extends ActionBarActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-
         // get the list of tasks
         mylist = new ArrayList<Task>();
         Task first = new Task("Eat pizza", 0);
