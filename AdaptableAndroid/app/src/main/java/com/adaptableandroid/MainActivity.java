@@ -9,7 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -48,6 +50,7 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.zip.Inflater;
 
 
@@ -64,11 +67,12 @@ public class MainActivity extends ActionBarActivity {
 
     ExpandableListAdapter explistAdapter;
     AnimatedExpandableListView expListView;
-    List<String> listDataHeader;
-    List<String> facts;
-    List<String> impacts;
+//    List<String> listDataHeader;
+//    HashMap<String, List<String>> listDataChild;
+//    List<String> facts;
+//    List<String> impacts;
     List<GroupItem> groupItems;
-    HashMap<String, List<String>> listDataChild;
+
     private final static String TAG_PRODUCTS = "products";
     private final static String TAG_ID = "id";
     private final static String TAG_IMPACT = "impacts";
@@ -76,10 +80,11 @@ public class MainActivity extends ActionBarActivity {
     private final static String TAG_FACT = "Fact";
     public final static String MYPREFERENCES = "MyPrefs";
     public final static String NOTHING_TO_DISPLAY = "Nothing to display";
+    public final static String FACT_TITLE = "Fact of the day";
+    public final static String IMPACT_TITLE = "Impact of the day";
     JSONArray products = null;
     String alreadyUpdated = "";
 
-//    @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,10 +93,10 @@ public class MainActivity extends ActionBarActivity {
         expListView = (AnimatedExpandableListView) findViewById(R.id.lvExp);
         expListView.setGroupIndicator(null);
         sharedPreferences = getSharedPreferences(MYPREFERENCES, Context.MODE_PRIVATE);
-        listDataHeader = new ArrayList<String>();
-        listDataChild = new HashMap<String, List<String>>();
-        facts = new ArrayList<String>();
-        impacts = new ArrayList<String>();
+//        listDataHeader = new ArrayList<String>();
+//        listDataChild = new HashMap<String, List<String>>();
+//        facts = new ArrayList<String>();
+//        impacts = new ArrayList<String>();
         groupItems = new ArrayList<GroupItem>();
 
         if(!sharedPreferences.contains(alreadyUpdated)){
@@ -102,6 +107,8 @@ public class MainActivity extends ActionBarActivity {
 
 
         expListView.setOnGroupClickListener(new AnimatedExpandableListView.OnGroupClickListener() {
+            int lastView = -1;
+
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id){
                 // call collapseGroupWithAnimation(int) and expandGroupWithAnimation(int)
@@ -109,7 +116,12 @@ public class MainActivity extends ActionBarActivity {
                 if(expListView.isGroupExpanded(groupPosition)){
                     expListView.collapseGroupWithAnimation(groupPosition);
                 }else{
+                    if(lastView != -1){
+                        expListView.collapseGroupWithAnimation(lastView);
+                    }
+
                     expListView.expandGroupWithAnimation(groupPosition);
+                    lastView = groupPosition;
                 }
                 return true;
             }
@@ -118,7 +130,6 @@ public class MainActivity extends ActionBarActivity {
         expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-//                expListView.collapseGroup(groupPosition);
                 expListView.collapseGroupWithAnimation(groupPosition);
                 return true;
             }
@@ -135,31 +146,17 @@ public class MainActivity extends ActionBarActivity {
         actionbar.setCustomView(view);
     }
 
-    boolean stringIsEmpty(String s){
-//            String fact = s;
-//            System.out.println("Checking if fact is null....");
-//            if(fact == null || fact.isEmpty()){
-//                System.out.println("FACT IS NULL");
-//            }
-//            else{
-//                if(fact.equals("null")){
-//                    System.out.println("The actual string is null");
-//                }else{
-//                    System.out.println("The string is neither null NOR empty");
-//                }
-//            }
-
-        if(s == null || s.isEmpty() || s.equals("null")){
-            return true;
-        }
-        return false;
+    private void setAdapter(){
+        //                    explistAdapter = new ExpandableListAdapter(MainActivity.this, listDataHeader, listDataChild);
+        explistAdapter = new ExpandableListAdapter(MainActivity.this, groupItems);
+        expListView.setAdapter(explistAdapter);
     }
 
-    public void addImpactAndFactsTestWithGroupItem(){
+    private void addImpactAndFactsTestWithGroupItem(){
         String impact = "Test Impact!";
         String fact = "Test Fact!";
         List<GroupItem> groupItems = new ArrayList<GroupItem>();
-        if(!stringIsEmpty(impact)){
+        if(!StringUtils.stringIsEmpty(impact)){
             final String im = "Impact";
             System.out.println("Impact: " + impact);
 
@@ -170,15 +167,10 @@ public class MainActivity extends ActionBarActivity {
 //            items.add(new ChildItem("blah"));
 
             groupItem.setChildren(items);
-//            listDataHeader.add(im);
-//            impacts.add(impact);
-//            impacts.add("Hello world");
-//            impacts.add("Hellow wolrd part 2");
-//            listDataChild.put(im, impacts);
             groupItems.add(groupItem);
         }
 
-        if(!stringIsEmpty(fact)){
+        if(!StringUtils.stringIsEmpty(fact)){
             System.out.println("Fact: " + fact);
 
             GroupItem groupItem = new GroupItem(TAG_FACT);
@@ -188,11 +180,6 @@ public class MainActivity extends ActionBarActivity {
 //            items.add(new ChildItem("fact3EXTREMELY LONG TO TEST THE FUNCTIONALITY OF THE APP AND THE RESPONSIVE PORITION OF THE ANDROID APP"));
 
             groupItem.setChildren(items);
-//            listDataHeader.add(TAG_FACT);
-//            facts.add(fact);
-//            facts.add("More facts");
-//            facts.add("More facts 2");
-//            listDataChild.put(TAG_FACT, facts);
             groupItems.add(groupItem);
         }
         GroupItem groupItem = new GroupItem(NOTHING_TO_DISPLAY);
@@ -204,85 +191,83 @@ public class MainActivity extends ActionBarActivity {
         expListView.setAdapter(explistAdapter);
     }
 
-    public void addImpactAndFactTestWithListDataHeader(){
-        String impact = "Test Impact!";
-        String fact = "Test Fact!";
-        if(!stringIsEmpty(impact)){
-            final String im = "Impact";
-            System.out.println("Impact: " + impact);
-            listDataHeader.add(im);
-            impacts.add(impact);
-            impacts.add("Hello world");
-            impacts.add("Hellow wolrd part 2");
-            listDataChild.put(im, impacts);
+//    private void addImpactAndFactTestWithListDataHeader(){
+//        String impact = "Test Impact!";
+//        String fact = "Test Fact!";
+//        if(!stringIsEmpty(impact)){
+//            final String im = "Impact";
+//            System.out.println("Impact: " + impact);
+//            listDataHeader.add(im);
+//            impacts.add(impact);
+//            impacts.add("Hello world");
+//            impacts.add("Hellow wolrd part 2");
+//            listDataChild.put(im, impacts);
+//
+//        }
+//
+//        if(!stringIsEmpty(fact)){
+//            System.out.println("Fact: " + fact);
+//            listDataHeader.add(TAG_FACT);
+//            facts.add(fact);
+//            facts.add("More facts");
+//            facts.add("More facts 2");
+//            listDataChild.put(TAG_FACT, facts);
+//
+//        }
+//        explistAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
+//        expListView.setAdapter(explistAdapter);
+//    }
 
-        }
-
-        if(!stringIsEmpty(fact)){
-            System.out.println("Fact: " + fact);
-            listDataHeader.add(TAG_FACT);
-            facts.add(fact);
-            facts.add("More facts");
-            facts.add("More facts 2");
-            listDataChild.put(TAG_FACT, facts);
-
-        }
-        explistAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
-        expListView.setAdapter(explistAdapter);
-    }
-
-    public void addImpactAndFactWithGroupItem(){
+    private void addImpactAndFactWithGroupItem(){
         String impact = sharedPreferences.getString(TAG_IMPACT, NOTHING_TO_DISPLAY);
         String fact = sharedPreferences.getString(TAG_FACT, NOTHING_TO_DISPLAY);
         List<GroupItem> groupItems = new ArrayList<GroupItem>();
-        if(!stringIsEmpty(impact)){
-            final String im = "Impact";
+        if(!StringUtils.stringIsEmpty(impact)){
             System.out.println("Impact: " + impact);
 
-            GroupItem groupItem = new GroupItem(im);
+            GroupItem groupItem = new GroupItem(IMPACT_TITLE);
             List<ChildItem> items = new ArrayList<ChildItem>();
             items.add(new ChildItem(impact));
-
             groupItem.setChildren(items);
             groupItems.add(groupItem);
         }
 
-        if(!stringIsEmpty(fact)){
+        if(!StringUtils.stringIsEmpty(fact)){
             System.out.println("Fact: " + fact);
 
-            GroupItem groupItem = new GroupItem(TAG_FACT);
+            GroupItem groupItem = new GroupItem(FACT_TITLE);
             List<ChildItem> items = new ArrayList<ChildItem>();
             items.add(new ChildItem(fact));
             groupItem.setChildren(items);
             groupItems.add(groupItem);
         }
-
-        explistAdapter = new ExpandableListAdapter(this, groupItems);
-        expListView.setAdapter(explistAdapter);
+        setAdapter();
+//        explistAdapter = new ExpandableListAdapter(this, groupItems);
+//        expListView.setAdapter(explistAdapter);
     }
 
-    public void addImpactAndFact(){
-        System.out.println("RECREATING VIEW");
-        String impact = sharedPreferences.getString(TAG_IMPACT, NOTHING_TO_DISPLAY);
-        String fact = sharedPreferences.getString(TAG_FACT, NOTHING_TO_DISPLAY);
-        if(!stringIsEmpty(impact)){
-            final String im = "Impact";
-            System.out.println("Impact: " + impact);
-            listDataHeader.add(im);
-            impacts.add(impact);
-            listDataChild.put(im, impacts);
-        }
-
-        if(!stringIsEmpty(fact)){
-            System.out.println("Fact: " + fact);
-            listDataHeader.add(TAG_FACT);
-            facts.add(fact);
-            listDataChild.put(TAG_FACT, facts);
-
-        }
-        explistAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
-        expListView.setAdapter(explistAdapter);
-    }
+//    public void addImpactAndFact(){
+//        System.out.println("RECREATING VIEW");
+//        String impact = sharedPreferences.getString(TAG_IMPACT, NOTHING_TO_DISPLAY);
+//        String fact = sharedPreferences.getString(TAG_FACT, NOTHING_TO_DISPLAY);
+//        if(!stringIsEmpty(impact)){
+//            final String im = "Impact";
+//            System.out.println("Impact: " + impact);
+//            listDataHeader.add(im);
+//            impacts.add(impact);
+//            listDataChild.put(im, impacts);
+//        }
+//
+//        if(!stringIsEmpty(fact)){
+//            System.out.println("Fact: " + fact);
+//            listDataHeader.add(TAG_FACT);
+//            facts.add(fact);
+//            listDataChild.put(TAG_FACT, facts);
+//
+//        }
+//        explistAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
+//        expListView.setAdapter(explistAdapter);
+//    }
 
 /*
     @Override
@@ -356,6 +341,25 @@ public class MainActivity extends ActionBarActivity {
         mNotifyManager.notify(mNotificationId, mBuilder.build());
     }
 
+    public String getAddress(double latitude, double longitude){
+        StringBuilder result = new StringBuilder();
+        try {
+            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if(addresses.size() > 0){
+                Address address = addresses.get(0);
+                result.append(address.getLocality()).append("\n");
+                result.append(address.getSubAdminArea()).append("\n");
+                result.append(address.getPostalCode()).append("\n");
+                result.append(address.getAdminArea()).append("\n");
+                result.append(address.getCountryName());
+            }
+        } catch(Exception e){
+            Log.e("tag", e.getMessage());
+        }
+        return result.toString();
+    }
+
     public void checkLocation(View view){
         view.startAnimation(AnimationUtils.loadAnimation(view.getContext(), R.anim.image_anim));
         checkLocation();
@@ -384,6 +388,7 @@ public class MainActivity extends ActionBarActivity {
 
                 try{
                     location = currentLocation.getLatitude() + " " + currentLocation.getLongitude();
+                    location = getAddress(currentLocation.getLatitude(), currentLocation.getLongitude());
                 }catch(Exception e){
                     location = "Cannot get location";
                 }
@@ -401,7 +406,7 @@ public class MainActivity extends ActionBarActivity {
                     pw.showAtLocation(layout, Gravity.CENTER, 0,0);
 
                     // Create the text view
-                    TextView mResultText = (TextView) layout.findViewById(R.id.server_status_text);
+                    TextView mResultText = (TextView) layout.findViewById(R.id.popup_text);
                     mResultText.setText(location);
                     Button cancelButton = (Button) layout.findViewById(R.id.end_data_send_button);
                     cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -417,7 +422,6 @@ public class MainActivity extends ActionBarActivity {
             }
 
         }
-
     }
 
     private class DisplayInfo extends AsyncTask<String, String, String>{
@@ -439,9 +443,9 @@ public class MainActivity extends ActionBarActivity {
             // Check for success tag
             int success;
             try{
-                Log.d("Request", "Starting");
+//                Log.d("Impact and Fact Request", "Starting");
                 jsonObject = jsonParser.getJSONFromURL(IMPACTS_URL);
-                Log.d("Checking result:", jsonObject.toString());
+//                Log.d("Checking result:", jsonObject.toString());
 
             } catch(Exception e){
                 e.printStackTrace();
@@ -475,13 +479,12 @@ public class MainActivity extends ActionBarActivity {
                         SharedPreferences.Editor editor = getSharedPreferences(MYPREFERENCES, Context.MODE_PRIVATE).edit();
                         editor.putString(alreadyUpdated, "already Updated");
 
-                        if(!stringIsEmpty(impact)){
-                            final String im = "Impact";
+                        if(!StringUtils.stringIsEmpty(impact)){
                             System.out.println("Impact: " + impact);
 //                            listDataHeader.add(im);
 //                            impacts.add(impact);
 //                            listDataChild.put(im, impacts);
-                            GroupItem groupItem = new GroupItem(im);
+                            GroupItem groupItem = new GroupItem(IMPACT_TITLE);
                             List<ChildItem> items = new ArrayList<ChildItem>();
                             items.add(new ChildItem(impact));
 
@@ -492,12 +495,12 @@ public class MainActivity extends ActionBarActivity {
 
                         }
 
-                        if(!stringIsEmpty(fact)){
+                        if(!StringUtils.stringIsEmpty(fact)){
                             System.out.println("Fact: " + fact);
 //                            listDataHeader.add(TAG_FACT);
 //                            facts.add(fact);
 //                            listDataChild.put(TAG_FACT, facts);
-                            GroupItem groupItem = new GroupItem(TAG_FACT);
+                            GroupItem groupItem = new GroupItem(FACT_TITLE);
                             List<ChildItem> items = new ArrayList<ChildItem>();
                             items.add(new ChildItem(fact));
                             groupItem.setChildren(items);
@@ -507,10 +510,8 @@ public class MainActivity extends ActionBarActivity {
                         }
                         editor.commit();
                     }
-//                    explistAdapter = new ExpandableListAdapter(MainActivity.this, listDataHeader, listDataChild);
-                    explistAdapter = new ExpandableListAdapter(MainActivity.this, groupItems);
-                    expListView.setAdapter(explistAdapter);
 
+                    setAdapter();
                 }
             }
             catch(Exception e){
