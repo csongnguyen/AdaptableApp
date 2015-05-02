@@ -90,21 +90,35 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayShowHomeEnabled(false);
+        actionbar.setDisplayHomeAsUpEnabled(false);
+        actionbar.setDisplayShowCustomEnabled(true);
+        actionbar.setDisplayShowTitleEnabled(false);
+
+        LayoutInflater mInflator = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = mInflator.inflate(R.layout.custom_menu, null);
+        actionbar.setCustomView(view);
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
         expListView = (AnimatedExpandableListView) findViewById(R.id.lvExp);
         expListView.setGroupIndicator(null);
         sharedPreferences = getSharedPreferences(MYPREFERENCES, Context.MODE_PRIVATE);
+        groupItems = new ArrayList<GroupItem>();
 //        listDataHeader = new ArrayList<String>();
 //        listDataChild = new HashMap<String, List<String>>();
 //        facts = new ArrayList<String>();
 //        impacts = new ArrayList<String>();
-        groupItems = new ArrayList<GroupItem>();
 
         if(!sharedPreferences.contains(alreadyUpdated)){
             new DisplayInfo().execute();
-        } else{
-            addImpactAndFactWithGroupItem();
         }
-
+        else{
+            addImpactAndFactWithGroupItem(sharedPreferences);
+        }
 
         expListView.setOnGroupClickListener(new AnimatedExpandableListView.OnGroupClickListener() {
             int lastView = -1;
@@ -134,20 +148,22 @@ public class MainActivity extends ActionBarActivity {
                 return true;
             }
         });
-
-        ActionBar actionbar = getSupportActionBar();
-        actionbar.setDisplayShowHomeEnabled(false);
-        actionbar.setDisplayHomeAsUpEnabled(false);
-        actionbar.setDisplayShowCustomEnabled(true);
-        actionbar.setDisplayShowTitleEnabled(false);
-
-        LayoutInflater mInflator = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = mInflator.inflate(R.layout.custom_menu, null);
-        actionbar.setCustomView(view);
     }
+
+
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+
+    }
+
 
     private void setAdapter(){
         //                    explistAdapter = new ExpandableListAdapter(MainActivity.this, listDataHeader, listDataChild);
+        expListView = (AnimatedExpandableListView) findViewById(R.id.lvExp);
+        expListView.setGroupIndicator(null);
         explistAdapter = new ExpandableListAdapter(MainActivity.this, groupItems);
         expListView.setAdapter(explistAdapter);
     }
@@ -218,10 +234,10 @@ public class MainActivity extends ActionBarActivity {
 //        expListView.setAdapter(explistAdapter);
 //    }
 
-    private void addImpactAndFactWithGroupItem(){
-        String impact = sharedPreferences.getString(TAG_IMPACT, NOTHING_TO_DISPLAY);
-        String fact = sharedPreferences.getString(TAG_FACT, NOTHING_TO_DISPLAY);
-        List<GroupItem> groupItems = new ArrayList<GroupItem>();
+    private void addImpactAndFactWithGroupItem(SharedPreferences sp){
+        String impact = sp.getString(TAG_IMPACT, NOTHING_TO_DISPLAY);
+        String fact = sp.getString(TAG_FACT, NOTHING_TO_DISPLAY);
+        groupItems = new ArrayList<GroupItem>();
         if(!StringUtils.stringIsEmpty(impact)){
             System.out.println("Impact: " + impact);
 
@@ -319,8 +335,11 @@ public class MainActivity extends ActionBarActivity {
     public void createNotification(){
         //Prepare intent which is triggered
         // if the notification is selected
+//        Intent intent = new Intent(this, MainActivity.class);
         Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
 
 
         NotificationCompat.Builder mBuilder =
