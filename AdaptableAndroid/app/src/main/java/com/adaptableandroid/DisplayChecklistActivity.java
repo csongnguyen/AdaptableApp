@@ -26,6 +26,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.adaptableandroid.com.adaptableandroid.models.Task;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -33,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Created by Connie on 4/6/2015.
@@ -47,7 +48,6 @@ public class DisplayChecklistActivity extends ActionBarActivity {
     ProgressDialog pDialog;
     SharedPreferences sharedPreferences;
     CheckBox checkBoxToBeUpdated;
-
 
     JSONArray products;
     private static final String TAG_PRODUCTS = "products";

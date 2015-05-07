@@ -1,6 +1,7 @@
 package com.adaptableandroid;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -14,12 +15,15 @@ import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.method.DateTimeKeyListener;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -48,6 +52,8 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -82,6 +88,7 @@ public class MainActivity extends ActionBarActivity {
     public final static String NOTHING_TO_DISPLAY = "Nothing to display";
     public final static String FACT_TITLE = "Fact of the day";
     public final static String IMPACT_TITLE = "Impact of the day";
+    public final static String APP_TAG = "APP_TAG";
     JSONArray products = null;
     String alreadyUpdated = "";
 
@@ -99,11 +106,18 @@ public class MainActivity extends ActionBarActivity {
         LayoutInflater mInflator = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = mInflator.inflate(R.layout.custom_menu, null);
         actionbar.setCustomView(view);
+
     }
 
     @Override
     public void onStart(){
         super.onStart();
+//
+        AlarmService alarmService = new AlarmService(getBaseContext());
+        alarmService.startAlarm();
+//        setAlarm();
+
+        if(!isNetworkAvailable()){return;}
         expListView = (AnimatedExpandableListView) findViewById(R.id.lvExp);
         expListView.setGroupIndicator(null);
         sharedPreferences = getSharedPreferences(MYPREFERENCES, Context.MODE_PRIVATE);
@@ -150,22 +164,19 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-
-
-    @Override
-    public void onResume(){
-        super.onResume();
-
-
-    }
-
-
     private void setAdapter(){
         //                    explistAdapter = new ExpandableListAdapter(MainActivity.this, listDataHeader, listDataChild);
         expListView = (AnimatedExpandableListView) findViewById(R.id.lvExp);
         expListView.setGroupIndicator(null);
         explistAdapter = new ExpandableListAdapter(MainActivity.this, groupItems);
         expListView.setAdapter(explistAdapter);
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     private void addImpactAndFactsTestWithGroupItem(){
@@ -193,7 +204,8 @@ public class MainActivity extends ActionBarActivity {
             List<ChildItem> items = new ArrayList<ChildItem>();
             items.add(new ChildItem(fact));
 //            items.add(new ChildItem("fact2"));
-//            items.add(new ChildItem("fact3EXTREMELY LONG TO TEST THE FUNCTIONALITY OF THE APP AND THE RESPONSIVE PORITION OF THE ANDROID APP"));
+//            items.add(new ChildItem("fact3EXTREMELY LONG TO TEST THE FUNCTIONALITY OF
+//                                      THE APP AND THE RESPONSIVE PORITION OF THE ANDROID APP"));
 
             groupItem.setChildren(items);
             groupItems.add(groupItem);
@@ -206,33 +218,6 @@ public class MainActivity extends ActionBarActivity {
         explistAdapter = new ExpandableListAdapter(this, groupItems);
         expListView.setAdapter(explistAdapter);
     }
-
-//    private void addImpactAndFactTestWithListDataHeader(){
-//        String impact = "Test Impact!";
-//        String fact = "Test Fact!";
-//        if(!stringIsEmpty(impact)){
-//            final String im = "Impact";
-//            System.out.println("Impact: " + impact);
-//            listDataHeader.add(im);
-//            impacts.add(impact);
-//            impacts.add("Hello world");
-//            impacts.add("Hellow wolrd part 2");
-//            listDataChild.put(im, impacts);
-//
-//        }
-//
-//        if(!stringIsEmpty(fact)){
-//            System.out.println("Fact: " + fact);
-//            listDataHeader.add(TAG_FACT);
-//            facts.add(fact);
-//            facts.add("More facts");
-//            facts.add("More facts 2");
-//            listDataChild.put(TAG_FACT, facts);
-//
-//        }
-//        explistAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
-//        expListView.setAdapter(explistAdapter);
-//    }
 
     private void addImpactAndFactWithGroupItem(SharedPreferences sp){
         String impact = sp.getString(TAG_IMPACT, NOTHING_TO_DISPLAY);
@@ -482,7 +467,10 @@ public class MainActivity extends ActionBarActivity {
                     public void run() {
                         pDialog.dismiss();
                     }}, 1000);  // 1000 milliseconds
-                if(!jsonObject.toString().isEmpty()){
+                if(jsonObject == null){
+                    System.out.println("jsonObject is null");
+                }
+                if(jsonObject != null && !jsonObject.toString().isEmpty()){
                     products = jsonObject.getJSONArray(TAG_PRODUCTS);
                     // groups will be impact, facts, restrictions (these are the headers)
                     // in each group, what we grab from json is what we will display

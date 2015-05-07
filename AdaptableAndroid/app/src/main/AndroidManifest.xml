@@ -54,9 +54,15 @@
                 android:value="com.adaptableandroid.DisplayDisastersActivity" />
         </activity>
 
+        <receiver android:name="AlarmReceiver"></receiver>
 
     </application>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <!--  Internet Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--<receiver android:process=":remote" android:name="AlarmReceiver"></receiver>-->
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
 </manifest>

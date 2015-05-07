@@ -34,7 +34,12 @@ public class JSONParser {
     }
 
     public JSONObject getJSONFromURL(String url){
-        return makeHttpGetRequest(url, "", "");
+        try {
+            return makeHttpGetRequest(url, "", "");
+        } catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public JSONObject makeHttpPostRequest(String url, String paramTypeToCompare, String parameter1, String paramTypeToUpdate, String parameter2){
@@ -56,7 +61,7 @@ public class JSONParser {
             HttpResponse httpResponse = httpClient.execute(httpPost);
             HttpEntity httpEntity = httpResponse.getEntity();
             is = httpEntity.getContent();
-
+            Log.d("Got HTTP Request", "Success! It is: " + httpPost.getURI());
         }catch(UnsupportedEncodingException e){
             e.printStackTrace();
         } catch(ClientProtocolException e){
@@ -64,7 +69,7 @@ public class JSONParser {
         } catch(IOException e){
             e.printStackTrace();
         }
-        Log.d("Got HTTP Request", "Success! It is: " + httpPost.getURI());
+
         try{
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
             StringBuilder sb = new StringBuilder();
@@ -74,19 +79,19 @@ public class JSONParser {
             }
             is.close();
             json = sb.toString();
+            Log.d("Grabbed the json result", "Success!");
         } catch(Exception e){
             Log.e("Buffer Error", "Error converting result " + e.toString());
         }
-        Log.d("Grabbed the json result", "Success!");
+
         // try to parse the string to a JSON object
         try{
             System.out.println("Printing JSONObject string= " + json);
             jsonObject = new JSONObject(json);
-
+            Log.d("Returning json result", "Success!");
         } catch(JSONException e){
             Log.e("JSON Parser", "Error parsing data " + e.toString());
         }
-        Log.d("Returning json result", "Success!");
         // returnin JSON String
         return jsonObject;
     }
@@ -113,7 +118,7 @@ public class JSONParser {
             HttpResponse httpResponse = httpClient.execute(httpPost);
             HttpEntity httpEntity = httpResponse.getEntity();
             is = httpEntity.getContent();
-
+            Log.d("Got HTTP Request", "Success! It is: " + httpPost.getURI());
         }catch(UnsupportedEncodingException e){
             e.printStackTrace();
         } catch(ClientProtocolException e){
@@ -121,7 +126,7 @@ public class JSONParser {
         } catch(IOException e){
             e.printStackTrace();
         }
-        Log.d("Got HTTP Request", "Success! It is: " + httpPost.getURI());
+
         try{
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
             StringBuilder sb = new StringBuilder();
@@ -131,18 +136,20 @@ public class JSONParser {
             }
             is.close();
             json = sb.toString();
+            Log.d("Grabbed the json result", "Success!");
         } catch(Exception e){
             Log.e("Buffer Error", "Error converting result " + e.toString());
         }
-        Log.d("Grabbed the json result", "Success!");
+
         // try to parse the string to a JSON object
         try{
             jsonObject = new JSONObject(json);
-
+            Log.d("Returning json result", "Success!");
         } catch(JSONException e){
             Log.e("JSON Parser", "Error parsing data " + e.toString());
+            jsonObject = null;
         }
-        Log.d("Returning json result", "Success!");
+
         // returnin JSON String
         return jsonObject;
     }
