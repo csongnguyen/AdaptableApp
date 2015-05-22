@@ -575,6 +575,7 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
                                 addToMyList(shortWarning, longWarning, status);
                             }
                         }
+                        addToMyList("This is a test warning to see the wrap around effect of a long to-do list item, just to see what will really happen.", "Blank Testing To-do", "0");
                         myAdapters.add(setAdapter(mylist));
 
                     }
