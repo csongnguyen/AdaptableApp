@@ -1,0 +1,154 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:gauge="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/disasterBackground"
+    android:orientation="vertical"
+    android:nestedScrollingEnabled="false"
+  >
+    <!--android:weightSum="100"-->
+    <!--android:layout_gravity="bottom"-->
+
+    <com.adaptableandroid.TypefacedTextView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+        android:id="@+id/disasterTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|top"
+        android:textColor="#FFF"
+        android:textSize="30dip"
+        my_namespace:typeface="Roboto-Black.ttf"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+    <!--android:layout_weight="15"-->
+
+    <!--<ListView-->
+        <!--android:id="@+id/listOfFactualElements"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="75"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_below="@+id/disasterTitle"></ListView>-->
+
+    <pl.pawelkleczkowski.customgauge.CustomGauge
+        android:id="@+id/gaugeForRisk"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_below="@+id/disasterTitle"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        gauge:pointEndColor="@color/Red"
+        gauge:pointStartColor="@color/LimeGreen"
+        gauge:startAngel="180"
+        gauge:startValue="0"
+        gauge:endValue="100"
+        gauge:strokeCap="ROUND"
+        gauge:strokeColor="@color/Gray"
+        gauge:strokeWidth="10dp"
+        gauge:sweepAngel="180"
+        android:layout_marginBottom="-50dp" />
+
+
+
+    <com.adaptableandroid.TypefacedTextView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+        android:id="@+id/disasterPageNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="1 of 3"
+        android:textColor="#FFF"
+        android:textSize="15dip"
+        my_namespace:typeface="Roboto-Black.ttf"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal" />
+    <!--android:layout_weight="10"-->
+
+        <!--<com.adaptableandroid.TypefacedTextView-->
+            <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+            <!--xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"-->
+            <!--android:id="@+id/titleOfExpList1"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Impact "-->
+            <!--android:textColor="#FFF"-->
+            <!--android:textSize="20dip"-->
+            <!--my_namespace:typeface="Roboto-Black.ttf"-->
+            <!--android:layout_marginTop="20dp"-->
+            <!--android:layout_below="@id/disasterTitle"-->
+            <!--android:layout_marginLeft="50dp"/>-->
+
+        <!--android:layout_weight="15"-->
+
+        <com.adaptableandroid.AnimatedExpandableListView
+            android:id="@+id/impactList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:listSelector="@android:color/transparent"
+            android:divider="@android:color/transparent"
+            android:layout_centerHorizontal="true"
+            android:scrollingCache="false"
+            android:layout_below="@id/gaugeForRisk"
+            />
+    <!--android:layout_below="@id/disasterTitle"-->
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_alignTop="@id/impactList"
+        android:background="@android:color/darker_gray"/>
+
+
+        <!--<com.adaptableandroid.TypefacedTextView-->
+            <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+            <!--xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"-->
+            <!--android:id="@+id/titleOfExpList2"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Facts "-->
+            <!--android:textColor="#FFF"-->
+            <!--android:textSize="20dip"-->
+            <!--my_namespace:typeface="Roboto-Black.ttf"-->
+            <!--android:layout_marginTop="20dp"-->
+            <!--android:layout_below="@id/impactList"-->
+            <!--android:layout_marginLeft="50dp"/>-->
+
+        <!--<com.adaptableandroid.AnimatedExpandableListView-->
+            <!--android:id="@+id/factList"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:listSelector="@android:color/transparent"-->
+            <!--android:divider="@android:color/transparent"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:scrollingCache="false"-->
+            <!--android:layout_below="@id/titleOfExpList2"></com.adaptableandroid.AnimatedExpandableListView>-->
+        <!--android:layout_weight="40"-->
+
+
+
+    <ImageView
+        android:id="@+id/riskscreen_left"
+        android:layout_width="50dp"
+        android:layout_height="150dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/riskscreen_left"
+        android:alpha="0.3"/>
+
+    <ImageView
+        android:id="@+id/riskscreen_right"
+        android:layout_width="50dp"
+        android:layout_height="150dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/riskscreen_right"
+        android:alpha="0.3"
+        android:layout_alignParentRight="true" />
+
+
+</RelativeLayout>

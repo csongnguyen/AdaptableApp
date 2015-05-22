@@ -3,6 +3,8 @@ package com.adaptableandroid;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.test.suitebuilder.annotation.LargeTest;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,10 +30,16 @@ import com.adaptableandroid.AnimatedExpandableListView.AnimatedExpandableListAda
 public class ExpandableListAdapter extends AnimatedExpandableListAdapter {
     private Context context;
     private List<GroupItem> groupItems;
+    private String groupItemTitle;
     private List<String> listDataHeader; //header titles
     // child data in format of header title, child title
     private HashMap<String, List<String>> listDataChild;
     private static final int DIVIDER = 30;
+    private int percentRisk = 0;
+
+    public ExpandableListAdapter(){
+        // filler
+    }
 
     public ExpandableListAdapter(Context context, List<String> listDataHeader,
                                  HashMap<String, List<String>> listDataChild){
@@ -40,9 +48,19 @@ public class ExpandableListAdapter extends AnimatedExpandableListAdapter {
         this.listDataChild = listDataChild;
     }
 
-    public ExpandableListAdapter(Context context, List<GroupItem> groupItems){
+    public ExpandableListAdapter(Context context, List<GroupItem> groupItems, String title, int percent){
         this.context = context;
         this.groupItems = groupItems;
+        this.groupItemTitle = title;
+        this.percentRisk = percent;
+    }
+
+    public String getGroupItemTitle(){
+        return groupItemTitle;
+    }
+
+    public int getPercentRisk(){
+        return percentRisk;
     }
 
     @Override
@@ -77,7 +95,15 @@ public class ExpandableListAdapter extends AnimatedExpandableListAdapter {
 //        TextView txtListChild = (TextView) convertView.findViewById(R.id.lblListItem);
 //        txtListChild.setText(childText);
 //        txtListChild.setText(childItem.getTopic());
-        holder.getTopic().setText(childItem.getTopic());
+
+        if(childItem.hasLink()){
+            holder.getTopic().setClickable(true);
+            holder.getTopic().setMovementMethod(LinkMovementMethod.getInstance());
+            String text = "To find out more, <a href='" + childItem.getTopic() +"'> click here </a>";
+            holder.getTopic().setText(Html.fromHtml(text));
+        }else{
+            holder.getTopic().setText(childItem.getTopic());
+        }
 
 //        int thisGroupSize = this.listDataChild.get(this.listDataHeader.get(groupPosition)).size();
         int thisGroupSize = this.groupItems.get(groupPosition).getChildren().size();
@@ -125,6 +151,7 @@ public class ExpandableListAdapter extends AnimatedExpandableListAdapter {
             convertView = inflater.inflate(R.layout.group, parent, false);
             holder = new GroupHolder();
             holder.setTitle((TextView) convertView.findViewById(R.id.lblListHeader));
+            holder.setHeadLabel((TextView) convertView.findViewById(R.id.headLabel));
             convertView.setTag(holder);
         }else{
             holder = (GroupHolder) convertView.getTag();
@@ -135,8 +162,9 @@ public class ExpandableListAdapter extends AnimatedExpandableListAdapter {
 ////        lblListHeader.setText(headerTitle); // used with listDataHeader
 //        lblListHeader.setText(groupItem.getTitle());
 
-        holder.getTitle().setTypeface(null, Typeface.BOLD);
-        holder.getTitle().setText(groupItem.getTitle());
+//        holder.getTitle().setTypeface(null, Typeface.BOLD);
+        holder.getTitle().setText(Html.fromHtml("<b>" + groupItem.getTitle() + "</b> <br/> <small> " + groupItem.getSubheader() +" </small>"));
+        holder.getHeadLabel().setText(groupItem.getHeadLabel());
 
         if (isExpanded) {
             convertView.setPadding(0, 0, 0, 0);

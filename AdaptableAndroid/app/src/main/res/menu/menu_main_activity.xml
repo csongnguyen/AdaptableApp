@@ -1,21 +1,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:myapp="http://schemas.android.com/apk/res-auto" >
+    xmlns:myapp="http://schemas.android.com/apk/res-auto"
+    >
 
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/action_settings"
-        android:icon="@drawable/settings"
+        android:icon="@drawable/topbar_settings"
         android:title="@string/action_settings"
         myapp:showAsAction="ifRoom|collapseActionView"
         />
 
-    <item android:id="@+id/action_warnings"
-        android:icon="@drawable/warnings"
-        android:title="@string/action_warnings"
-        myapp:showAsAction="ifRoom|collapseActionView" />
+    <!--<item android:id="@+id/action_warnings"-->
+        <!--android:icon="@drawable/warnings"-->
+        <!--android:title="@string/action_warnings"-->
+        <!--myapp:showAsAction="ifRoom|collapseActionView" />-->
 
-    <item android:id="@+id/action_checklists"
-        android:icon="@drawable/checklists"
-        android:title="@string/action_checklists"
-        myapp:showAsAction="ifRoom|collapseActionView" />
+    <!--<item android:id="@+id/action_checklists"-->
+        <!--android:icon="@drawable/checklists"-->
+        <!--android:title="@string/action_checklists"-->
+        <!--myapp:showAsAction="ifRoom|collapseActionView" />-->
 
 </menu>

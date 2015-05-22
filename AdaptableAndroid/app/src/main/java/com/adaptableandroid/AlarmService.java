@@ -5,6 +5,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 
 import java.util.Calendar;
 
@@ -26,12 +27,14 @@ public class AlarmService {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.SECOND, 1);
         c.setTimeInMillis(System.currentTimeMillis());
-        long firstTime = c.getTimeInMillis() + 10000;
+        long firstTime = c.getTimeInMillis() + 1000;
 
         // Schedule the alarm!
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 //        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 6000, mAlarmSender);
         am.set(AlarmManager.RTC_WAKEUP,firstTime, mAlarmSender);
-        System.out.println("alarm is set on repeat");
+        System.out.println("alarm is NOT set on repeat right now");
     }
+
+
 }

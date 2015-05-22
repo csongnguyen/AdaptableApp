@@ -5,9 +5,16 @@ package com.adaptableandroid.com.adaptableandroid.models;
  */
 public class ChildItem {
     String topic;
+    boolean hasLink;
 
     public ChildItem(String topic){
         this.topic = topic;
+        hasLink = false;
+    }
+
+    public ChildItem(String topic, boolean cond){
+        this.topic = topic;
+        hasLink = cond;
     }
 
     public void setTopic(String topic) {
@@ -15,5 +22,8 @@ public class ChildItem {
     }
     public String getTopic(){
         return topic;
+    }
+    public boolean hasLink(){
+        return hasLink;
     }
 }

@@ -11,6 +11,9 @@ import android.os.Handler;
 import android.os.StrictMode;
 import android.widget.TextView;
 
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import io.fabric.sdk.android.Fabric;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -33,6 +36,11 @@ import android.widget.TextView;
  */
 @SuppressLint("NewApi")
 public class SplashScreen extends Activity {
+
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "ifG235Bk5GNYPM6fLX6tBPkrD";
+    private static final String TWITTER_SECRET = "6nbcbRTUKeFZEUhPh7TmKvA1A0Pw7RHpIe3VDtsTiPkfj52ayr";
+
     // Splash screen timer
     public static int SPLASH_TIME_OUT = 1500;
     public DatabaseHelper myDBHelper;
@@ -41,6 +49,8 @@ public class SplashScreen extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_splash);
         myDBHelper =  new DatabaseHelper(this);
 
@@ -65,14 +75,14 @@ public class SplashScreen extends Activity {
                 startActivity(i);
 
                 // this is for when we want to use a SQLiteDatabase
-//                try {
-//                    myDBHelper.createDatabase();
-//                } catch(IOException e){
-//                    throw new Error("Unable to create database");
-//                }
+                try {
+                    myDBHelper.createDatabase();
+                } catch(IOException e){
+                    throw new Error("Unable to create database");
+                }
 
                 try{
-                    SharedPreferences sp = getSharedPreferences(MainActivity.MYPREFERENCES, Context.MODE_PRIVATE);
+                    SharedPreferences sp = getSharedPreferences(StringUtils.MYPREFERENCES, Context.MODE_PRIVATE);
                     sp.edit().clear().commit();
 //                    myDBHelper.openDatabase();
 //                    myDBHelper.getDroughtInfo();

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="21.0.3"><source path="C:\Users\Connie\citris\adaptable\AdaptableApp\AdaptableAndroid\libs\CircularImageView\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\res"/></dataSet><dataSet config="main"><source path="C:\Users\Connie\citris\adaptable\AdaptableApp\AdaptableAndroid\libs\CircularImageView\res"><file path="C:\Users\Connie\citris\adaptable\AdaptableApp\AdaptableAndroid\libs\CircularImageView\res\values\attrs.xml" qualifiers=""><declare-styleable name="CircularImageView">
+        <attr format="boolean" name="border"/>
+        <attr format="dimension" name="border_width"/>
+        <attr format="color" name="border_color"/>
+        <attr format="boolean" name="shadow"/>
+    </declare-styleable><declare-styleable name="Theme">
+        <attr format="reference" name="circularImageViewStyle"/>
+    </declare-styleable></file></source><source path="C:\Users\Connie\citris\adaptable\AdaptableApp\AdaptableAndroid\libs\CircularImageView\build\generated\res\rs\debug"/><source path="C:\Users\Connie\citris\adaptable\AdaptableApp\AdaptableAndroid\libs\CircularImageView\build\generated\res\generated\debug"/></dataSet><dataSet config="debug"><source path="C:\Users\Connie\citris\adaptable\AdaptableApp\AdaptableAndroid\libs\CircularImageView\src\debug\res"/></dataSet><mergedItems><configuration qualifiers=""><declare-styleable name="CircularImageView"><attr format="boolean" name="border"/><attr format="dimension" name="border_width"/><attr format="color" name="border_color"/><attr format="boolean" name="shadow"/></declare-styleable><declare-styleable name="Theme"><attr format="reference" name="circularImageViewStyle"/></declare-styleable></configuration></mergedItems></merger>

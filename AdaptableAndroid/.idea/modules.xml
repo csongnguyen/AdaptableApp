@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AdaptableAndroid.iml" filepath="$PROJECT_DIR$/AdaptableAndroid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libs/CircularImageView/CircularImageView.iml" filepath="$PROJECT_DIR$/libs/CircularImageView/CircularImageView.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libs/CustomGauge/CustomGauge.iml" filepath="$PROJECT_DIR$/libs/CustomGauge/CustomGauge.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libs/libs.iml" filepath="$PROJECT_DIR$/libs/libs.iml" />
     </modules>
   </component>
 </project>

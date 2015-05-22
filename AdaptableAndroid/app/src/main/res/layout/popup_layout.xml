@@ -33,7 +33,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="horizontal"
-            android:gravity="center_horizontal|bottom">
+            android:gravity="bottom|right">
 
                 <!-- style="@style/Button"-->
             <!--android:drawableLeft="@drawable/stop_button"-->
@@ -41,9 +41,8 @@
                 <Button android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:id="@+id/end_data_send_button"
-                    android:layout_centerHorizontal="true"
-                    android:text="Cancel"
-                    />
+                    android:text="Close"
+                />
 
         </LinearLayout>
 

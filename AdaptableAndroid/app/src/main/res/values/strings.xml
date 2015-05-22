@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Adaptable</string>
     <string name="title">AdaptableTitle</string>
-    <string name="buttonChecklist">Earthquakes ></string>
+    <string name="buttonChecklist">Checklists ></string>
     <string name="checkBox1">CheckBox</string>
     <string name="infoButton">More Info</string>
     <string name="hello_world">Hello world!</string>
@@ -11,4 +11,5 @@
     <string name="action_checklists">Checklist</string>
     <string name="advisory_warning">Advisory Warning Example Text</string>
     <string name="disasters">Disasters</string>
+
 </resources>

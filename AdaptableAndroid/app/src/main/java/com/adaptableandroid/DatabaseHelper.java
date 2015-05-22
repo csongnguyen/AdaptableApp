@@ -1,10 +1,12 @@
 package com.adaptableandroid;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,13 +17,15 @@ import java.sql.SQLException;
 
 /**
  * Created by Connie on 4/21/2015.
+ * Ideally, this DatabaseHelper will only contain tables that pertain to that particular user,
+ * especially for checklists and for the last updated disaster risks. For now, there is only
+ * the drought data.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     // The Android's default system path of your app database.
     private static String DB_PATH = "";
     private static String DB_NAME = "citris_database";
-    private static String DROUGHT_TABLE = "drought_data";
     private SQLiteDatabase mDatabase;
     private final Context mContext;
 
@@ -46,25 +50,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void createDatabase() throws IOException {
         boolean dbExist = checkDatabase();
         SQLiteDatabase db_Read = null;
-//        if(dbExist){
-//            // do nothing, the database already exists
-//            System.out.println("Database already exists, not creating new one.");
-//        }
-//        else{
+        if(dbExist){
+            // do nothing, the database already exists
+            System.out.println("Database already exists, not creating new one.");
+        }
+        else{
             /* by calling this method, an empty database
                will be created in the default system path
                of your app, so we are going to overwrite
                that database with our database.
             */
-//            db_Read = this.getReadableDatabase();
-//            db_Read.close();
+            db_Read = this.getReadableDatabase();
+            db_Read.close();
             try{
                 copyDatabase();
             } catch(IOException e){
                 throw new Error("Error copying database");
             }
         }
-//    }
+    }
 
     /**
         Check if the database already exists to avoid recopying
@@ -82,7 +86,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             if(f.exists()){
                 System.out.println("Just created directory for DB_PATH");
-                checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+                checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
             }
 
 
@@ -128,7 +132,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void openDatabase() throws SQLException {
         // Open the database
         String myPath = DB_PATH + DB_NAME;
-        mDatabase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+        mDatabase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
     }
 
     @Override
@@ -156,9 +160,67 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     */
     //----------------helper functions------------------------------
 
+    public Cursor getDroughtDataForCounty(String county){
+        String selectQuery = "SELECT * FROM " + StringUtils.DROUGHT_TABLE + " WHERE _id='" + county + "'";
+        Cursor cursor = mDatabase.rawQuery(selectQuery, null);
+        if(cursor.moveToFirst()){
+            return cursor;
+        }
+        return null;
+    }
+
+    public Cursor getDroughtConditionForZip(String zip){
+        String selectQuery = "SELECT * FROM " + StringUtils.PERSONAL_DROUGHT_TABLE + " WHERE _id=" + zip;
+        Cursor cursor = mDatabase.rawQuery(selectQuery, null);
+        if(cursor.moveToFirst()){
+            return cursor;
+        }
+        return null;
+    }
+
+    public void updateDroughtLocation(String zip, int droughtCondition, double droughtPercent){
+//        String updateQuery = "UPDATE " + StringUtils.PERSONAL_DROUGHT_TABLE
+//                + " SET " + StringUtils.TAG_DROUGHT_COND + "=" + droughtCondition
+//                + ", " + StringUtils.TAG_PERCENTAGE + "=" + droughtPercent + " WHERE " + StringUtils.TAG_ZIP + "=" + zip;
+        ContentValues values = new ContentValues();
+        values.put(StringUtils.TAG_DROUGHT_COND, Integer.toString(droughtCondition));
+        values.put(StringUtils.TAG_PERCENTAGE, Double.toString(droughtPercent));
+
+        mDatabase.update(StringUtils.PERSONAL_DROUGHT_TABLE, values, StringUtils.TAG_ZIP  + "=" + zip, null);
+    }
+
+    public void addDroughtLocation(String zip, int droughtCondition, double droughtPercent){
+        String updateQuery = "INSERT INTO " + StringUtils.PERSONAL_DROUGHT_TABLE
+              + " VALUES (" + zip + ", " + droughtCondition + ", " + droughtPercent + ")";
+
+        ContentValues values = new ContentValues();
+        values.put(StringUtils.TAG_ZIP, zip);
+        values.put(StringUtils.TAG_DROUGHT_COND, Integer.toString(droughtCondition));
+        values.put(StringUtils.TAG_PERCENTAGE, Double.toString(droughtPercent));
+
+        try{
+            mDatabase.beginTransaction();
+            long key = mDatabase.insertOrThrow(StringUtils.PERSONAL_DROUGHT_TABLE, null, values);
+            mDatabase.setTransactionSuccessful();
+            System.out.println("KEY for inserting value zip, drought_level, and drought_percentage:" + key);
+
+            Cursor testCursor = getDroughtConditionForZip(zip);
+            if(testCursor.moveToFirst()){
+                Log.d("ADDED IN LOCATION", testCursor.getString(testCursor.getColumnIndex(StringUtils.TAG_ZIP)));
+            }else{
+                Log.d("ADDED IN LOCATION", "FAIL");
+            }
+
+        } finally {
+            mDatabase.endTransaction();
+        }
+
+        System.out.println("Updating Personal Drought Table by adding in new location: " + zip);
+    }
+
     public void getDroughtInfo(){
         System.out.println("Database path "  + mDatabase.getPath());
-        String selectQuery = "SELECT * FROM " + DROUGHT_TABLE;
+        String selectQuery = "SELECT * FROM " + StringUtils.DROUGHT_TABLE;
         Cursor cursor = mDatabase.rawQuery(selectQuery, null);
         if(cursor.moveToFirst()){
             do {

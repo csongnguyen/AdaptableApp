@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="40dp"
-    android:layout_gravity="fill_horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="center"
     android:background="#4697b5"
-    android:orientation="horizontal" android:theme="@style/MainActivityActionBar" >
+     >
+    <!--android:orientation="horizontal"-->
+
+    <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:src="@drawable/settings_menu"-->
+        <!--android:onClick="goToDisasters"/>-->
+
+
+
+
+
     <!--"@color/material_blue_grey_800"-->
 
     <!--<android.support.v7.widget.Toolbar-->
@@ -16,39 +28,35 @@
         <!--app:contentInsetStart="0dp"-->
         <!--app:theme="@style/Theme.AppCompat.Light.DarkActionBar">-->
 
-        <ImageView
-            android:id="@+id/custom_menu_settings"
-            android:layout_width="32dp"
-            android:layout_height="fill_parent"
-            android:layout_alignParentLeft="true"
+   <ImageView
+        android:id="@+id/custom_menu_settings"
+        android:layout_width="32dp"
+        android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
 
-            android:onClick="createNotification"
-            android:src="@drawable/settings_menu"
+        android:onClick="goToDisasters"
+        android:src="@drawable/settings_menu"
+    />
 
-            />
-    <!--android:layout_centerVertical="true"-->
-    <!--android:scaleType="centerInside"-->
+    <!--<ImageView-->
+    <!--android:id="@+id/custom_menu_warnings"-->
+    <!--android:layout_width="32dp"-->
+    <!--android:layout_height="fill_parent"-->
 
-        <ImageView
-            android:id="@+id/custom_menu_warnings"
-            android:layout_width="32dp"
-            android:layout_height="fill_parent"
+    <!--android:onClick="checkLocation"-->
+    <!--android:src="@drawable/warning_menu"-->
+    <!--android:layout_alignParentTop="true"-->
+    <!--android:layout_centerHorizontal="true" />-->
 
-            android:onClick="checkLocation"
-            android:src="@drawable/warning_menu"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true" />
+    <!--<ImageView-->
+    <!--android:id="@+id/custom_menu_checklists"-->
+    <!--android:layout_width="32dp"-->
+    <!--android:layout_height="fill_parent"-->
 
-        <ImageView
-            android:id="@+id/custom_menu_checklists"
-            android:layout_width="32dp"
-            android:layout_height="fill_parent"
-
-
-            android:onClick="goToDisasters"
-            android:src="@drawable/risks_menu"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+    <!--android:onClick="goToDisasters"-->
+    <!--android:src="@drawable/risks_menu"-->
+    <!--android:layout_alignParentRight="true"-->
+    <!--android:layout_alignParentEnd="true" />-->
 
 
     <!--</android.support.v7.widget.Toolbar>-->

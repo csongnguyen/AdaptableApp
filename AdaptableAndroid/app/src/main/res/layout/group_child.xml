@@ -21,9 +21,9 @@
 
     <TextView
         android:id="@+id/lblListItem"
-        android:textColor="#CCCCCC"
-        android:background="#545454"
-
+        android:textColor="#000"
+        android:background="#FFF"
+        android:alpha="0.7"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="50dp"

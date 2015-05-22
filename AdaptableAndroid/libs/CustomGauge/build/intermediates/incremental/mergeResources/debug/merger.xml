@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="22.0.0"><source path="C:\Users\Connie\citris\adaptable\AdaptableApp\AdaptableAndroid\libs\CustomGauge\build\intermediates\exploded-aar\com.android.support\support-v4\22.0.0\res"/></dataSet><dataSet config="main"><source path="C:\Users\Connie\citris\adaptable\AdaptableApp\AdaptableAndroid\libs\CustomGauge\res"><file path="C:\Users\Connie\citris\adaptable\AdaptableApp\AdaptableAndroid\libs\CustomGauge\res\values\attrs.xml" qualifiers=""><declare-styleable name="CustomGauge">
+        <attr format="integer" name="pointSize"/>
+        <attr format="color" name="pointStartColor"/>
+        <attr format="color" name="pointEndColor"/>
+        <attr format="color" name="strokeColor"/>
+        <attr format="dimension" name="strokeWidth"/>
+        <attr format="string" name="strokeCap"/>
+        <attr format="integer" name="startAngel"/>
+        <attr format="integer" name="sweepAngel"/>
+        <attr format="integer" name="startValue"/>
+        <attr format="integer" name="endValue"/>
+    </declare-styleable></file></source><source path="C:\Users\Connie\citris\adaptable\AdaptableApp\AdaptableAndroid\libs\CustomGauge\build\generated\res\rs\debug"/><source path="C:\Users\Connie\citris\adaptable\AdaptableApp\AdaptableAndroid\libs\CustomGauge\build\generated\res\generated\debug"/></dataSet><dataSet config="debug"><source path="C:\Users\Connie\citris\adaptable\AdaptableApp\AdaptableAndroid\libs\CustomGauge\src\debug\res"/></dataSet><mergedItems><configuration qualifiers=""><declare-styleable name="CustomGauge"><attr format="integer" name="pointSize"/><attr format="color" name="pointStartColor"/><attr format="color" name="pointEndColor"/><attr format="color" name="strokeColor"/><attr format="dimension" name="strokeWidth"/><attr format="string" name="strokeCap"/><attr format="integer" name="startAngel"/><attr format="integer" name="sweepAngel"/><attr format="integer" name="startValue"/><attr format="integer" name="endValue"/></declare-styleable></configuration></mergedItems></merger>

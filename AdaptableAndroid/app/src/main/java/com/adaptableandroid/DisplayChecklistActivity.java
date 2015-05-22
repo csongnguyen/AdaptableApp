@@ -31,6 +31,7 @@ import com.adaptableandroid.com.adaptableandroid.models.Task;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -50,8 +51,8 @@ public class DisplayChecklistActivity extends ActionBarActivity {
     CheckBox checkBoxToBeUpdated;
 
     JSONArray products;
-    private static final String TAG_PRODUCTS = "products";
-    private static final String TAG_SUCCESS = "success";
+
+
     private static final String TAG_ID = "id";
     private static final String TAG_STATUS = "is_completed";
     private static final String TAG_SHORT = "shortWarning";
@@ -74,7 +75,7 @@ public class DisplayChecklistActivity extends ActionBarActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        sharedPreferences = getSharedPreferences(MainActivity.MYPREFERENCES, Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(StringUtils.MYPREFERENCES, Context.MODE_PRIVATE);
 
         String update_checklist_type = UPDATED_CHECKLIST + DROUGHT;
         new DisplayChecklist().execute();
@@ -129,9 +130,22 @@ public class DisplayChecklistActivity extends ActionBarActivity {
         adapt = new MyAdapter(this, R.layout.list_inner_view, mylist);
         ListView listTask = (ListView) findViewById(R.id.listView1);
         listTask.setAdapter(adapt);
+        listTask.setDivider(null);
         pbar = (ProgressBar) findViewById(R.id.progressBarChecklist);
         pbar.setProgress(getNumberOfCompletedTasks());
         pbar.setMax(mylist.size());
+        pbar.setBackgroundResource(R.drawable.drought_background);
+
+        setProgressViews();
+    }
+
+    private void setProgressViews(){
+        double percentFinished = 100*((double)pbar.getProgress()/pbar.getMax());
+        TextView pView1 = (TextView) findViewById(R.id.checklistProgressView1);
+        pView1.setText(Math.floor(percentFinished) + "%");
+
+        TextView pView2 = (TextView) findViewById(R.id.checklistProgressView2);
+        pView2.setText(pbar.getProgress() + "/" + pbar.getMax());
     }
 
    /* @Override
@@ -147,10 +161,10 @@ public class DisplayChecklistActivity extends ActionBarActivity {
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             //Inflate the view from a predefined XML layout
-            View layout = inflater.inflate(R.layout.popup_layout, (ViewGroup) findViewById(R.id.popup_element));
+            final View layout = inflater.inflate(R.layout.popup_layout, (ViewGroup) findViewById(R.id.popup_element));
 
-            // create a 300px width and 470px height PopupWindow
-            pw = new PopupWindow(layout, 300, 470, true);
+            // create a 500px width and 470px height PopupWindow
+            pw = new PopupWindow(layout, 500, 450, true);
             pw.showAtLocation(layout, Gravity.CENTER, 0,0);
 
             TextView mResultText = (TextView) layout.findViewById(R.id.popup_text);
@@ -162,6 +176,13 @@ public class DisplayChecklistActivity extends ActionBarActivity {
                     pw.dismiss();
                 }
             });
+
+            ObjectAnimator fadeIn = ObjectAnimator.ofFloat(layout, "alpha", .3f, 1f);
+            fadeIn.setDuration(200);
+
+            final AnimatorSet mAnimationSet = new AnimatorSet();
+            mAnimationSet.play(fadeIn);
+            mAnimationSet.start();
 
         }catch(Exception e){
             e.printStackTrace();
@@ -237,13 +258,14 @@ public class DisplayChecklistActivity extends ActionBarActivity {
 
                         if(checkBoxToBeUpdated.isChecked()){
                             showCompletionAnimation();
-                            checkBoxToBeUpdated.setTextColor(0xFF00FF00);
+//                            checkBoxToBeUpdated.setTextColor(0xFF00FF00);
                         }
-                        else{checkBoxToBeUpdated.setTextColor(0xFFFF0000);}
+//                        else{checkBoxToBeUpdated.setTextColor(0xFFFF0000);}
 
                         int maxList = pbar.getMax();
                         int numberCompleted = getNumberOfCompletedTasks();
                         pbar.setProgress(numberCompleted);
+                        setProgressViews();
 
                         if(numberCompleted == maxList){
                             Toast.makeText(getApplicationContext(), "Congratulations, "
@@ -273,8 +295,8 @@ public class DisplayChecklistActivity extends ActionBarActivity {
 //                System.out.println("current task = " + current.getShortName());
                 chk.setText(current.getShortName());
                 chk.setChecked(current.getStatus()==1?true:false);
-                if(chk.isChecked()){chk.setTextColor(0xFF00FF00);}
-                else{chk.setTextColor(0xFFFF0000);}
+//                if(chk.isChecked()){chk.setTextColor(0xFF00FF00);}
+//                else{chk.setTextColor(0xFFFF0000);}
                 chk.setTag(current);
                 info.setTag(current);
 //                Log.d("listener", String.valueOf(current.getId()));
@@ -301,10 +323,10 @@ public class DisplayChecklistActivity extends ActionBarActivity {
                 Log.d("Checklist Update", "Starting");
                 System.out.println("Updating checklist right now....");
                 Task taskToBeUpdated = (Task) checkBoxToBeUpdated.getTag();
-                String id = Integer.toString(taskToBeUpdated.getId());
-                String status = Integer.toString(taskToBeUpdated.getStatus());
-
-                jsonResult = jsonParser.makeHttpPostRequest(UPDATE_CHECKLIST_URL, TAG_ID, id, TAG_STATUS,status);
+//                String id = Integer.toString(taskToBeUpdated.getId());
+//                String status = Integer.toString(taskToBeUpdated.getStatus());
+//
+//                jsonResult = jsonParser.makeHttpPostRequest(UPDATE_CHECKLIST_URL, TAG_ID, id, TAG_STATUS,status);
                 Log.d("Checking result:", jsonResult.toString());
 
             } catch(Exception e){
@@ -379,7 +401,7 @@ public class DisplayChecklistActivity extends ActionBarActivity {
                         pDialog.dismiss();
                     }}, 300);  // 1000 milliseconds
                 if(!jsonObject.toString().isEmpty()){
-                    products = jsonObject.getJSONArray(TAG_PRODUCTS);
+                    products = jsonObject.getJSONArray(StringUtils.TAG_PRODUCTS);
 //                    Set<String> shortWarnings = new TreeSet<String>();
 //                    Set<String> longWarnings = new TreeSet<String>();
 //                    Set<String> statuses = new TreeSet<String>();

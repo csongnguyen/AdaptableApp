@@ -7,7 +7,7 @@ public class Task {
     private String shortName;
     private String longName;
     private int status;
-    private int id;
+//    private int id;
 
     public Task(){
         this.shortName = null;
@@ -20,16 +20,24 @@ public class Task {
         this.shortName = shortName;
         this.longName = longName;
         this.status = status;
-        this.id = id;
+//        this.id = id;
     }
 
-    public int getId(){
-        return id;
+    public Task(String shortName, String longName, int status){
+        super();
+        this.shortName = shortName;
+        this.longName = longName;
+        this.status = status;
+//        this.id = id;
     }
 
-    public void setId(int id){
-        this.id = id;
-    }
+//    public int getId(){
+//        return id;
+//    }
+//
+//    public void setId(int id){
+//        this.id = id;
+//    }
 
     public String getShortName(){
         return shortName;

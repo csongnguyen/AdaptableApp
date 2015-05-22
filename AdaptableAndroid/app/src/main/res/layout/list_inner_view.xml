@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" 
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
     <CheckBox
         android:id="@+id/checkBox1"
         android:layout_width="wrap_content"
@@ -9,7 +9,7 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:text="@string/checkBox1"
-        android:textColor="#F00"
+        android:textColor="#000"
         android:layout_alignBottom="@+id/infoButton"
         android:layout_toLeftOf="@+id/infoButton"
         android:layout_toStartOf="@+id/infoButton"

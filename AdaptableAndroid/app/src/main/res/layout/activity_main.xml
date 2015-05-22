@@ -1,28 +1,99 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:nestedScrollingEnabled="false">
+    android:layout_height="match_parent"
+    android:id="@+id/main"
+    android:nestedScrollingEnabled="false"
+    tools:context=".HomeUpButton"
+    >
    <!-- android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"-->
 
+    <RelativeLayout
+        android:id="@+id/advisoryLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/advisoryWarningImage"
+        android:src="@drawable/warning_menu2"
+        android:layout_toLeftOf="@+id/advisory_warning"
+        android:layout_toStartOf="@+id/advisory_warning"
+        android:layout_marginTop="25dp"
+        android:layout_marginRight="5dp"/>
+    
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:id="@+id/advisory_warning"
         android:text="@string/advisory_warning"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="118dp" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="25dp"
+        android:layout_alignTop="@+id/advisoryWarningImage"
+        />
 
+    </RelativeLayout>
+
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/drought_ic"
+        app:border_color="#EEEEEE"
+        app:border_width="4dp"
+        app:shadow="true"
+        android:id="@+id/imageView"
+        android:layout_below="@id/advisoryLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+    />
+
+<!--<ImageView-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="100dp"-->
+
+        <!--android:layout_below="@id/advisoryLayout"-->
+        <!--android:id="@+id/imageView"-->
+        <!--android:src="@drawable/drought_ic"-->
+        <!--android:layout_centerHorizontal="true" />-->
+    <!--android:layout_below="@id/advisory_warning"-->
+
+
+    <com.adaptableandroid.TypefacedTextView
+        xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/titleOfTweets"
+        android:text="Recent Updates of Disaster Events"
+        android:layout_below="@+id/imageView"
+        android:textSize="15dip"
+        my_namespace:typeface="Roboto-Black.ttf"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp" />
+
+    <ListView
+        android:id="@+id/tweetListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/titleOfTweets"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"></ListView>
 
     <com.adaptableandroid.AnimatedExpandableListView
         android:id="@+id/lvExp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/advisory_warning"
+        android:layout_below="@+id/tweetListView"
         android:listSelector="@android:color/transparent"
         android:divider="@android:color/transparent"
         android:layout_centerHorizontal="true"

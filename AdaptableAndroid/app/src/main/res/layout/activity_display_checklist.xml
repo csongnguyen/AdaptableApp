@@ -15,13 +15,94 @@
 
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="200dp"
+        android:layout_height="225dp"
         android:id="@+id/progressBarChecklist"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:progressDrawable="@drawable/progress_bar_styling"
+        android:secondaryProgress="100"
+        />
+
+    <com.adaptableandroid.TypefacedTextView
+        xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+        android:id="@+id/checklistProgressView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="50%"
+        android:layout_marginTop="90dp"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#FFF"
+        android:textSize="30dip"
+        my_namespace:typeface="Roboto-Black.ttf"
+        android:layout_alignTop="@+id/progressBarChecklist" />
+    <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
+
+    <com.adaptableandroid.TypefacedTextView
+        xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+        android:id="@+id/checklistProgressView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="5/10"
+        android:layout_marginTop="125dp"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#FFF"
+        my_namespace:typeface="Roboto-Black.ttf"
+        android:layout_alignTop="@+id/progressBarChecklist"
+        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+    <com.adaptableandroid.TypefacedTextView
+        xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+        android:id="@+id/checklistProgressView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="complete"
+        android:layout_marginTop="140dp"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#FFF"
+        my_namespace:typeface="Roboto-Black.ttf"
+        android:layout_alignTop="@+id/progressBarChecklist"
+        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+    <com.adaptableandroid.TypefacedTextView
+        xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+        android:id="@+id/checklistProgressViewTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Drought Preparation"
+        android:layout_marginTop="140dp"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#FFF"
+        android:textSize="25dip"
+        my_namespace:typeface="Roboto-Black.ttf"
+        android:layout_alignBottom="@+id/progressBarChecklist"
+        android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+    <ImageView
+        android:id="@+id/riskscreen_left"
+        android:layout_width="50dp"
+        android:layout_height="150dp"
+        android:layout_alignLeft="@id/progressBarChecklist"
+        android:src="@drawable/riskscreen_left"
+        android:alpha="0.6"
+        android:layout_marginTop="30dp" />
+
+    <ImageView
+        android:id="@+id/riskscreen_right"
+        android:layout_width="50dp"
+        android:layout_height="150dp"
+        android:layout_alignRight="@id/progressBarChecklist"
+        android:src="@drawable/riskscreen_right"
+        android:alpha="0.6"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="30dp"/>
+
 
 </RelativeLayout>

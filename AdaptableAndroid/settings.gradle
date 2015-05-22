@@ -1,1 +1,6 @@
-include ':app'
+include ':app', ':CustomGauge'
+include ':libs:CircularImageView'
+//include ':libs:CustomGauge'
+//project(':CircularImageView').projectDir = new File('libs/CircularImageView')
+//project(':CustomGauge').projectDir = new File('libs/CustomGauge')
+project(':CustomGauge').projectDir = new File('libs/CustomGauge')
