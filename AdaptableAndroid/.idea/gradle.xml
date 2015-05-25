@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/libs" />
             <option value="$PROJECT_DIR$/libs/CircularImageView" />
             <option value="$PROJECT_DIR$/libs/CustomGauge" />
+            <option value="$PROJECT_DIR$/libs/WheelPicker" />
           </set>
         </option>
       </GradleProjectSettings>

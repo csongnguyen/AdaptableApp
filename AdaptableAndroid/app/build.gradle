@@ -12,6 +12,7 @@ apply plugin: 'io.fabric'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    maven { url "https://jitpack.io" }
 }
 
 configurations {
@@ -44,9 +45,11 @@ dependencies {
     compile 'com.google.android.gms:play-services:7.3.0'
     compile files('libs/mysql-connector-java-5.1.35-bin.jar')
     compile project(':libs:CircularImageView')
-    //    compile project(":CustomGauge")
+    compile project(':libs:WheelPicker')
     compile('com.twitter.sdk.android:twitter:1.5.1@aar') {
         transitive = true;
     }
     compile project(':CustomGauge')
+    compile 'com.github.PhilJay:MPAndroidChart:v2.1.0'
+
 }

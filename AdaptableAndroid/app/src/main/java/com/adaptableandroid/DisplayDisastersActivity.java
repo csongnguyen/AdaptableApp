@@ -463,6 +463,9 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                         JSONArray products = jsonObject.getJSONArray(StringUtils.disasterTypes[disasterIndex]);
                         // groups will be impact, facts, restrictions (these are the headers)
                         // in each group, what we grab from json is what we will display
+
+
+
                         System.out.println("Length of products: " + products.length());
                         for(int i = 0; i < products.length(); i++){
                             JSONObject object = products.getJSONObject(i);
@@ -473,8 +476,6 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                             String impact = object.getString(TAG_IMPACT);
                             String fact = object.getString(TAG_FACT);
                             String link = object.getString(TAG_LINK);
-
-
 
                             if(!StringUtils.stringIsEmpty(impact)){
                                 System.out.println("Impact: " + impact);
@@ -532,9 +533,6 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                         items.add(new ChildItem(drought_percent + "% of my area in drought"));
                         groupItem.setChildren(items);
                         groupItems.add(groupItem);
-
-
-
 //                            }
                         impactAdapters.add(setAdapter(groupItems, (int)drought_percent));
                     }

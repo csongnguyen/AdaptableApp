@@ -359,34 +359,38 @@ public boolean onOptionsItemSelected(MenuItem item) {
 //            layout.startAnimation(AnimationUtils.loadAnimation(layout.getContext(), R.anim.slide_in_right));
 
 
+/***************************************************************/
+//            // We need to get the instance of the LayoutInflater, use the context of this activity
+//            LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//
+//            //Inflate the view from a predefined XML layout
+//            View layout = inflater.inflate(R.layout.popup_layout, (ViewGroup) findViewById(R.id.popup_element));
+//
+//            // create a 300px width and 470px height PopupWindow
+//            final PopupWindow pw = new PopupWindow(layout, 400, 400, true);
+//            pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
+//
+//            // Create the text view
+//            TextView mResultText = (TextView) layout.findViewById(R.id.popup_text);
+//            mResultText.setText("Settings will be coming soon!");
+//            Button cancelButton = (Button) layout.findViewById(R.id.end_data_send_button);
+//            cancelButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    pw.dismiss();
+//                }
+//            });
+//
+//            ObjectAnimator fadeIn = ObjectAnimator.ofFloat(layout, "alpha", .3f, 1f);
+//            fadeIn.setDuration(200);
+//
+//            final AnimatorSet mAnimationSet = new AnimatorSet();
+//            mAnimationSet.play(fadeIn);
+//            mAnimationSet.start();
+/***************************************************************/
 
-            // We need to get the instance of the LayoutInflater, use the context of this activity
-            LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            //Inflate the view from a predefined XML layout
-            View layout = inflater.inflate(R.layout.popup_layout, (ViewGroup) findViewById(R.id.popup_element));
-
-            // create a 300px width and 470px height PopupWindow
-            final PopupWindow pw = new PopupWindow(layout, 400, 400, true);
-            pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
-
-            // Create the text view
-            TextView mResultText = (TextView) layout.findViewById(R.id.popup_text);
-            mResultText.setText("Settings will be coming soon!");
-            Button cancelButton = (Button) layout.findViewById(R.id.end_data_send_button);
-            cancelButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    pw.dismiss();
-                }
-            });
-
-            ObjectAnimator fadeIn = ObjectAnimator.ofFloat(layout, "alpha", .3f, 1f);
-            fadeIn.setDuration(200);
-
-            final AnimatorSet mAnimationSet = new AnimatorSet();
-            mAnimationSet.play(fadeIn);
-            mAnimationSet.start();
+        Intent intent = new Intent(this, LineChartActivity2.class);
+            startActivity(intent);
 
         }catch(Exception e){
             e.printStackTrace();

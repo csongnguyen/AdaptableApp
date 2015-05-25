@@ -76,6 +76,31 @@
                 />
         </activity>
 
+        <!-- Line Chart Activity-->
+        <!--<activity android:name="com.adaptableandroid.DemoBaseActivity"-->
+            <!--android:label="@string/action_charts"-->
+            <!--android:parentActivityName="com.adaptableandroid.MainActivity"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:theme="@style/AppTheme"-->
+            <!-->-->
+            <!--<meta-data-->
+                <!--android:name="android.support.PARENT_ACTIVITY"-->
+                <!--android:value="com.adaptableandroid.MainActivity"-->
+                <!--/>-->
+        <!--</activity>-->
+
+        <activity android:name="LineChartActivity2"
+            android:label="@string/action_charts"
+            android:parentActivityName="com.adaptableandroid.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.adaptableandroid.MainActivity"
+                />
+            </activity>
+
         <receiver android:name="AlarmReceiver"></receiver>
 
         <meta-data
