@@ -65,7 +65,7 @@
 
     <com.adaptableandroid.TypefacedTextView
         xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/titleOfTweets"
         android:text="Recent Updates of Disaster Events"
@@ -73,9 +73,9 @@
         android:textSize="15dip"
         my_namespace:typeface="Roboto-Black.ttf"
         android:layout_marginTop="10dp"
-        android:layout_centerHorizontal="true"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp" />
+    />
+
 
     <ListView
         android:id="@+id/tweetListView"
@@ -88,6 +88,15 @@
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"></ListView>
+
+
+    <ImageView
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/refresh_icon"
+        android:layout_alignEnd="@id/tweetListView"
+        android:layout_above="@id/tweetListView"
+        android:onClick="refreshTwitter"/>
 
     <com.adaptableandroid.AnimatedExpandableListView
         android:id="@+id/lvExp"

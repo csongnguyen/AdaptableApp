@@ -34,7 +34,7 @@ public class ExpandableListAdapter extends AnimatedExpandableListAdapter {
     private List<String> listDataHeader; //header titles
     // child data in format of header title, child title
     private HashMap<String, List<String>> listDataChild;
-    private static final int DIVIDER = 30;
+    private static final int DIVIDER = 13;
     private int percentRisk = 0;
 
     public ExpandableListAdapter(){

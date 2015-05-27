@@ -4,14 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!--<TextView-->
-        <!--android:paddingTop="10dp"-->
-        <!--android:paddingBottom="10dp"-->
-        <!--android:id="@+id/lblListHeader"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:textAppearance="?android:attr/textAppearanceLarge" />-->
-
     <com.adaptableandroid.TypefacedTextView
         xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
         android:id="@+id/headLabel"
@@ -21,10 +13,10 @@
         android:paddingLeft="1dip"
         android:paddingTop="5dp"
         android:textColor="#FFF"
-        android:textSize="20dip"
+        android:textSize="16sp"
         my_namespace:typeface="Roboto-Black.ttf"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp" />
+        android:layout_marginLeft="21dp"
+         />
 
     <!--android:background="#545454"-->
     <RelativeLayout
@@ -36,27 +28,31 @@
         android:id="@+id/lblListHeader"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="30dip"
-        android:paddingRight="10dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:paddingTop="15dp"
-        android:paddingBottom="10dp"
+        android:paddingBottom="15dp"
         android:textColor="#000"
-        android:background="#FFF"
+
         my_namespace:typeface="Roboto-Medium.ttf"
-        android:alpha="0.7"
-        android:textSize="15dip"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp" />
+        android:alpha="0.68"
+        android:textSize="15sp"
+        android:layout_marginLeft="21dp"
+        android:layout_marginRight="21dp"
+        android:background="@drawable/disaster_box_layout"/>
+        <!--android:background="#FFF"-->
 
     <ImageView
         android:id="@+id/down_arrow"
         android:layout_width="75dp"
-        android:layout_height="20dp"
-        android:src="@drawable/down_arrow"
+        android:layout_height="24dp"
+        android:src="@drawable/read_more_button"
         android:layout_gravity="right"
-        android:alpha="0.3"
+        android:alpha="1.0"
         android:layout_centerHorizontal="true"
-        android:layout_alignBottom="@id/lblListHeader" />
+        android:layout_alignBottom="@id/lblListHeader"
+        android:scaleType="center"
+        />
     </RelativeLayout>
 
 </LinearLayout>

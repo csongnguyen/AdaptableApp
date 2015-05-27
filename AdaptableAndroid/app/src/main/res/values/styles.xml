@@ -6,8 +6,8 @@
         <item name="displayOptions">showHome|useLogo</item>
         <!--<item name="android:homeAsUpIndicator">@null</item>-->
         <!--<item name="homeAsUpIndicator">@null</item>-->
-        <item name="android:homeAsUpIndicator">@drawable/topbar_back</item>
-        <item name="homeAsUpIndicator">@drawable/topbar_back</item>
+        <!--<item name="android:homeAsUpIndicator">@drawable/topbar_back</item>-->
+        <!--<item name="homeAsUpIndicator">@drawable/topbar_back</item>-->
 
         <item name="android:actionBarStyle">@style/MainActivityActionBar</item>
         <item name="actionBarStyle">@style/MainActivityActionBar</item>
@@ -20,10 +20,12 @@
         <!-- Customize your theme here. -->
         <!--<item name="android:homeAsUpIndicator">@null</item>-->
         <!--<item name="homeAsUpIndicator">@null</item>-->
-        <!--<item name="android:homeAsUpIndicator">@drawable/topbar_back</item>-->
-        <!--<item name="homeAsUpIndicator">@drawable/topbar_back</item>-->
-        <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
+        <item name="android:homeAsUpIndicator">@drawable/topbar_back</item>
+        <item name="homeAsUpIndicator">@drawable/topbar_back</item>
 
+        
+
+        <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
         <!-- Support library compatibility -->
         <item name="titleTextStyle">@style/MyActionBarTitleText</item>
     </style>

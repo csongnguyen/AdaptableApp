@@ -46,7 +46,8 @@ public class WheelView extends View {
 
 	/** Top and bottom shadows colors */
 	private static final int[] SHADOWS_COLORS = new int[] { 0xFF111111,
-			0x00AAAAAA, 0x00AAAAAA };
+        0x00FFFFFF, 0x00FFFFFF};
+//			0x00AAAAAA, 0x00AAAAAA };
 
 	/** Top and bottom items offset (to hide that) */
 	private static final int ITEM_OFFSET_PERCENT = 10;
@@ -223,6 +224,7 @@ public class WheelView extends View {
 	 * @param viewAdapter the view adapter
 	 */
 	public void setViewAdapter(WheelViewAdapter viewAdapter) {
+
 	    if (this.viewAdapter != null) {
 	        this.viewAdapter.unregisterDataSetObserver(dataObserver);
 	    }
@@ -427,13 +429,13 @@ public class WheelView extends View {
 			centerDrawable = getContext().getResources().getDrawable(R.drawable.wheel_val);
 		}
 
-		if (topShadow == null) {
-			topShadow = new GradientDrawable(Orientation.TOP_BOTTOM, SHADOWS_COLORS);
-		}
-
-		if (bottomShadow == null) {
-			bottomShadow = new GradientDrawable(Orientation.BOTTOM_TOP, SHADOWS_COLORS);
-		}
+//		if (topShadow == null) {
+//			topShadow = new GradientDrawable(Orientation.TOP_BOTTOM, SHADOWS_COLORS);
+//		}
+//
+//		if (bottomShadow == null) {
+//			bottomShadow = new GradientDrawable(Orientation.BOTTOM_TOP, SHADOWS_COLORS);
+//		}
 
 		setBackgroundResource(R.drawable.wheel_bg);
 	}
@@ -558,21 +560,21 @@ public class WheelView extends View {
 	        drawCenterRect(canvas);
 		}
 		
-        drawShadows(canvas);
+//        drawShadows(canvas);
 	}
 
 	/**
 	 * Draws shadows on top and bottom of control
 	 * @param canvas the canvas for drawing
 	 */
-	private void drawShadows(Canvas canvas) {
-		int height = (int)(1.5 * getItemHeight());
-		topShadow.setBounds(0, 0, getWidth(), height);
-		topShadow.draw(canvas);
-
-		bottomShadow.setBounds(0, getHeight() - height, getWidth(), getHeight());
-		bottomShadow.draw(canvas);
-	}
+//	private void drawShadows(Canvas canvas) {
+//		int height = (int)(1.5 * getItemHeight());
+//		topShadow.setBounds(0, 0, getWidth(), height);
+//		topShadow.draw(canvas);
+//
+//		bottomShadow.setBounds(0, getHeight() - height, getWidth(), getHeight());
+//		bottomShadow.draw(canvas);
+//	}
 
 	/**
 	 * Draws items

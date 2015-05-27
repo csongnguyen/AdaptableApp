@@ -3,20 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/buttonChecklist"
-        android:id="@+id/buttonChecklist"
-        android:onClick="goToChecklist"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        />
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/buttonChecklist"-->
+        <!--android:id="@+id/buttonChecklist"-->
+        <!--android:onClick="goToChecklist"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--/>-->
 
     <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pager_disasters"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/buttonChecklist"/>
+      />
+    <!--android:layout_below="@id/buttonChecklist"-->
 
 </RelativeLayout>

@@ -22,15 +22,15 @@
     <TextView
         android:id="@+id/lblListItem"
         android:textColor="#000"
-        android:background="#FFF"
         android:alpha="0.7"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
+        android:layout_marginLeft="21dp"
+        android:layout_marginRight="21dp"
         android:paddingTop="15dp"
         android:paddingLeft="50dp"
-        android:paddingBottom="10dp"
-        android:paddingRight="10dp" />
+        android:paddingBottom="15dp"
+        android:paddingRight="15dp"
+        android:background="@drawable/disaster_box_child_layout"/>
 
 </LinearLayout>

@@ -12,5 +12,7 @@
     <string name="advisory_warning">Advisory Warning Example Text</string>
     <string name="disasters">Disasters</string>
     <string name="action_charts">Charts</string>
+    <string name="action_profile">Profile</string>
+
 
 </resources>

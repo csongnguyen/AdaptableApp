@@ -62,11 +62,11 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
 
     CheckBox checkBoxToBeUpdated;
 
-    private static final String TAG_STATUS = "is_completed";
-    private static final String TAG_SHORT = "shortWarning";
-    private static final String TAG_LONG = "longWarning";
+    public static final String TAG_STATUS = "is_completed";
+    public static final String TAG_SHORT = "shortWarning";
+    public static final String TAG_LONG = "longWarning";
     private static final String UPDATED_CHECKLIST = "updatedChecklist";
-    private static final String DISASTER_TYPE = "disaster_type";
+    public static final String DISASTER_TYPE = "disaster_type";
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -76,7 +76,7 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
         setContentView(R.layout.activity_display_checklists);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFF4697b5));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFF5BA4F3));//0xFF4697b5
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar);
         TextView tView = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.actionbarTitle);
@@ -122,8 +122,17 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if(id == R.id.action_profile){
+            try{
+                Intent intent = new Intent(this, LineChartActivity2.class);
+                startActivity(intent);
+
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        else if (id == R.id.action_settings) {
             // Set the text view as the activity layout
             try{
                 // We need to get the instance of the LayoutInflater, use the context of this activity
@@ -303,7 +312,21 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
             ((TextView) rootView.findViewById(R.id.checklistProgressViewTitle)).setText(
                     args.getString(ARG_DISASTER) + " Preparation");
 
-            rootView.findViewById(R.id.progressBarChecklist).setBackgroundResource(R.drawable.drought_background);
+            switch(args.getString(ARG_DISASTER)){
+                case "Drought":
+                    rootView.findViewById(R.id.progressBarChecklist).setBackgroundResource(R.drawable.drought_background);
+                    break;
+                case "Earthquake":
+                    rootView.findViewById(R.id.progressBarChecklist).setBackgroundResource(R.drawable.bg_earthquake);
+                    break;
+                case "Wildfire":
+                    rootView.findViewById(R.id.progressBarChecklist).setBackgroundResource(R.drawable.bg_wildfire);
+                    break;
+                default:
+                    break;
+            }
+
+
 
             ListView listView = (ListView) rootView.findViewById(R.id.listView1);
 
@@ -345,7 +368,7 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
             return pbar.getMax();
         }
 
-        private int getNumberOfCompletedTasks(){
+        public int getNumberOfCompletedTasks(){
             int total = 0;
             for(int i = 0;i < mylist.size();i++){
                 if(mylist.get(i).getStatus() == 1){
@@ -360,10 +383,10 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
             setProgressViews();
         }
 
-        private void setProgressViews(View rootView){
+        public void setProgressViews(View rootView){
             int percentFinished = (int)(100*((double)pbar.getProgress()/pbar.getMax()));
             TextView pView1 = (TextView) rootView.findViewById(R.id.checklistProgressView1);
-            pView1.setText(Math.floor(percentFinished) + "%");
+            pView1.setText(percentFinished + "%");
 
             TextView pView2 = (TextView) rootView.findViewById(R.id.checklistProgressView2);
             pView2.setText(pbar.getProgress() + "/" + pbar.getMax());
@@ -380,7 +403,6 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
 
 
     }
-
 
     private class MyAdapter extends ArrayAdapter<Task> {
         Context context;
@@ -575,7 +597,7 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
                                 addToMyList(shortWarning, longWarning, status);
                             }
                         }
-                        addToMyList("This is a test warning to see the wrap around effect of a long to-do list item, just to see what will really happen.", "Blank Testing To-do", "0");
+//                        addToMyList("This is a test warning to see the wrap around effect of a long to-do list item, just to see what will really happen.", "Blank Testing To-do", "0");
                         myAdapters.add(setAdapter(mylist));
 
                     }

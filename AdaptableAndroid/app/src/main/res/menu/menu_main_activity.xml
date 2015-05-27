@@ -2,12 +2,18 @@
     xmlns:myapp="http://schemas.android.com/apk/res-auto"
     >
 
-    <!-- Settings, should always be in the overflow -->
-    <item android:id="@+id/action_settings"
-        android:icon="@drawable/topbar_settings"
-        android:title="@string/action_settings"
+    <item android:id="@+id/action_profile"
+        android:icon="@drawable/user_profile_default"
+        android:title="@string/action_profile"
         myapp:showAsAction="ifRoom|collapseActionView"
         />
+
+    <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_settings"
+    android:icon="@drawable/topbar_settings"
+    android:title="@string/action_settings"
+    myapp:showAsAction="ifRoom|collapseActionView"
+    />
 
     <!--<item android:id="@+id/action_warnings"-->
         <!--android:icon="@drawable/warnings"-->

@@ -36,6 +36,7 @@ import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.adaptableandroid.com.adaptableandroid.models.ChildItem;
 import com.adaptableandroid.com.adaptableandroid.models.GroupItem;
@@ -108,7 +109,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         actionbar.setDisplayShowTitleEnabled(true);
         actionbar.setDisplayUseLogoEnabled(true);
         actionbar.setDisplayShowHomeEnabled(true);
-        actionbar.setBackgroundDrawable(new ColorDrawable(0xFF4697b5));
+        actionbar.setBackgroundDrawable(new ColorDrawable(0xFF5BA4F3)); // FF4697b5
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar);
@@ -139,10 +140,11 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         });
         buildGoogleApiClient();
 
-//        String consumerKey = "OG3xipNKmjVDwN2aaoRiMDTPv";
-//        String consumerSecret = "yht0R0ugim0k646P7V4NTsW8MDs9bNCAird8xn8iSXcvo2r7DB";
-//        TwitterAuthConfig authConfig =  new TwitterAuthConfig(consumerKey, consumerSecret);
-//        Fabric.with(this, new TwitterCore(authConfig), new TweetUi());
+        String consumerKey = "OG3xipNKmjVDwN2aaoRiMDTPv";
+        String consumerSecret = "yht0R0ugim0k646P7V4NTsW8MDs9bNCAird8xn8iSXcvo2r7DB";
+        TwitterAuthConfig authConfig =  new TwitterAuthConfig(consumerKey, consumerSecret);
+        Fabric.with(this, new TwitterCore(authConfig), new TweetUi());
+
 
 //        MyTweet myTweet = new MyTweet();
 //        myTweet.author = "dbradby";
@@ -163,9 +165,12 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
     }
 
+
+
     private void setListAdapter(TweetViewFetchAdapter adapt){
         ListView listTask = (ListView) findViewById(R.id.tweetListView);
         listTask.setAdapter(adapt);
+
 //        listTask.setDivider(null);
     }
 
@@ -346,8 +351,17 @@ public boolean onOptionsItemSelected(MenuItem item) {
     // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId();
 
+    if(id == R.id.action_profile){
+        try{
+            Intent intent = new Intent(this, LineChartActivity2.class);
+            startActivity(intent);
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
     //noinspection SimplifiableIfStatement
-    if (id == R.id.action_settings) {
+    else if (id == R.id.action_settings) {
         // Set the text view as the activity layout
         try{
 //            Log.d("SETTINGS", "Trying to inflate settings");
@@ -360,37 +374,37 @@ public boolean onOptionsItemSelected(MenuItem item) {
 
 
 /***************************************************************/
-//            // We need to get the instance of the LayoutInflater, use the context of this activity
-//            LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//
-//            //Inflate the view from a predefined XML layout
-//            View layout = inflater.inflate(R.layout.popup_layout, (ViewGroup) findViewById(R.id.popup_element));
-//
-//            // create a 300px width and 470px height PopupWindow
-//            final PopupWindow pw = new PopupWindow(layout, 400, 400, true);
-//            pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
-//
-//            // Create the text view
-//            TextView mResultText = (TextView) layout.findViewById(R.id.popup_text);
-//            mResultText.setText("Settings will be coming soon!");
-//            Button cancelButton = (Button) layout.findViewById(R.id.end_data_send_button);
-//            cancelButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    pw.dismiss();
-//                }
-//            });
-//
-//            ObjectAnimator fadeIn = ObjectAnimator.ofFloat(layout, "alpha", .3f, 1f);
-//            fadeIn.setDuration(200);
-//
-//            final AnimatorSet mAnimationSet = new AnimatorSet();
-//            mAnimationSet.play(fadeIn);
-//            mAnimationSet.start();
-/***************************************************************/
+            // We need to get the instance of the LayoutInflater, use the context of this activity
+            LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        Intent intent = new Intent(this, LineChartActivity2.class);
-            startActivity(intent);
+            //Inflate the view from a predefined XML layout
+            View layout = inflater.inflate(R.layout.popup_layout, (ViewGroup) findViewById(R.id.popup_element));
+
+            // create a 300px width and 470px height PopupWindow
+            final PopupWindow pw = new PopupWindow(layout, 400, 400, true);
+            pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
+
+            // Create the text view
+            TextView mResultText = (TextView) layout.findViewById(R.id.popup_text);
+            mResultText.setText("Settings will be coming soon!");
+            Button cancelButton = (Button) layout.findViewById(R.id.end_data_send_button);
+            cancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    pw.dismiss();
+                }
+            });
+
+            ObjectAnimator fadeIn = ObjectAnimator.ofFloat(layout, "alpha", .3f, 1f);
+            fadeIn.setDuration(200);
+
+            final AnimatorSet mAnimationSet = new AnimatorSet();
+            mAnimationSet.play(fadeIn);
+            mAnimationSet.start();
+/***************************************************************/
+//
+//        Intent intent = new Intent(this, LineChartActivity2.class);
+//            startActivity(intent);
 
         }catch(Exception e){
             e.printStackTrace();
@@ -401,7 +415,10 @@ public boolean onOptionsItemSelected(MenuItem item) {
     return super.onOptionsItemSelected(item);
 }
 
-
+    public void refreshTwitter(View view){
+        view.startAnimation(AnimationUtils.loadAnimation(view.getContext(), R.anim.rotate_refresh));
+        new GetTweets().execute();
+    }
 
     public void goToDisasters(View view){
         view.startAnimation(AnimationUtils.loadAnimation(view.getContext(), R.anim.image_anim));
@@ -610,17 +627,18 @@ public boolean onOptionsItemSelected(MenuItem item) {
 
                     }
 
-                    setListAdapter(tweetAdapter);
+
                     tweetAdapter.setTweetIds(tweetIDS,
                             new LoadCallback<List<Tweet>>() {
                                 @Override
                                 public void success(List<Tweet> tweets) {
                                     // my custom actions
+                                    setListAdapter(tweetAdapter);
                                 }
 
                                 @Override
                                 public void failure(TwitterException exception) {
-                                    // Toast.makeText(...).show();
+                                    Toast.makeText(getApplicationContext(), "Twitter failed to  update :( ", Toast.LENGTH_LONG).show();
                                 }
                             });
                 }

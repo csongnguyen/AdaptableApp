@@ -1,4 +1,4 @@
 include ':app', ':CustomGauge'
 include ':libs:CircularImageView'
-include ':libs:WheelPicker'
 project(':CustomGauge').projectDir = new File('libs/CustomGauge')
+include ':libs:WheelPicker'
