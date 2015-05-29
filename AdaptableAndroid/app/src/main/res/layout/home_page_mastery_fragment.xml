@@ -1,0 +1,94 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/home_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.85">
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/logo"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="0dp"
+            />
+
+        <com.adaptableandroid.TypefacedTextView
+            xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+            my_namespace:typeface="Roboto-Regular.ttf"
+            android:id="@+id/user_level_main"
+            android:text="Level: 3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/Black"
+            android:layout_below="@id/logo"
+            android:layout_alignLeft="@id/logo"
+            android:layout_marginTop="-40dp"
+            android:textAllCaps="true"/>
+        <!--android:layout_toRightOf="@+id/user_profile_picture"-->
+        <!--android:layout_toEndOf="@+id/user_profile_picture"-->
+
+        <com.adaptableandroid.TypefacedTextView
+            xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+            my_namespace:typeface="Roboto-Medium.ttf"
+            android:id="@+id/user_level_name_main"
+            android:text=" | Master"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/Black"
+            android:layout_below="@id/logo"
+            android:layout_toRightOf="@+id/user_level_main"
+            android:layout_alignTop="@id/user_level_main"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            />
+
+        <com.adaptableandroid.TypefacedTextView
+            xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+            my_namespace:typeface="Roboto-Regular.ttf"
+            android:id="@+id/user_progress_main"
+            android:text="Progress: 450/560"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/Black"
+            android:layout_marginLeft="20dp"
+            android:layout_below="@id/user_level_main"
+            android:layout_centerHorizontal="true"
+            />
+    </RelativeLayout>
+
+    <!--<RelativeLayout-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="0.1"-->
+        <!--android:background="#5dd848"-->
+        <!-->-->
+
+        <!--<View android:id="@+id/circle1"-->
+            <!--android:layout_width="7dp"-->
+            <!--android:layout_height="7dp"-->
+            <!--android:background="@drawable/circle"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_marginBottom="5dp"-->
+            <!--android:layout_marginRight="20dp"/>-->
+
+        <!--<View android:id="@+id/circle2"-->
+            <!--android:layout_width="7dp"-->
+            <!--android:layout_height="7dp"-->
+            <!--android:background="@drawable/circle"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_toLeftOf="@id/circle1"-->
+            <!--android:layout_marginRight="5dp"/>-->
+
+    <!--</RelativeLayout>-->
+
+</LinearLayout>

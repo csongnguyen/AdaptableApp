@@ -18,7 +18,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -134,7 +138,93 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
         buildGoogleApiClient();
 
+        ViewPager pager = (ViewPager) findViewById(R.id.viewPager_home);
+        pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
+
+        pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            int lastCircle = -1;
+            int lastPosition = -1;
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//                System.out.println("position for homescreen " + position);
+//                System.out.println("lastCircle " + lastPosition);
+                if(position == 0){
+                    View circle = (View) findViewById(R.id.circle3);
+                    circle.setBackgroundResource(R.drawable.circle_blue);
+
+                    if(lastCircle != -1 && lastPosition != 0){
+                        circle = (View) findViewById(lastCircle);
+                        circle.setBackgroundResource(R.drawable.circle_white);
+                    }
+                    lastCircle = R.id.circle3;
+                    lastPosition = position;
+                }
+                else if(position == 1){
+                    View circle = (View) findViewById(R.id.circle2);
+                    circle.setBackgroundResource(R.drawable.circle_blue);
+
+                    if(lastCircle != -1 && lastPosition != 1){
+                        circle = (View) findViewById(lastCircle);
+                        circle.setBackgroundResource(R.drawable.circle_white);
+                    }
+                    lastCircle = R.id.circle2;
+                    lastPosition = position;
+                }else if(position == 2){
+                    View circle = (View) findViewById(R.id.circle1);
+                    circle.setBackgroundResource(R.drawable.circle_blue);
+
+                    if(lastCircle != -1 && lastPosition != 2){
+                        circle = (View) findViewById(lastCircle);
+                        circle.setBackgroundResource(R.drawable.circle_white);
+                    }
+                    lastCircle = R.id.circle1;
+                    lastPosition = position;
+                }
+//                System.out.println("lastCircle now " + lastPosition);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
     }
+
+    private class MyPagerAdapter extends FragmentPagerAdapter {
+
+        public MyPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int pos) {
+            switch(pos) {
+
+                case 0: return FragmentOne.newInstance("FirstFragment, Instance 1");
+                case 1: return FragmentTwo.newInstance("SecondFragment, Instance 1");
+                case 2: return FragmentThree.newInstance("ThirdFragment, Instance 1");
+//                case 3: return ThirdFragment.newInstance("ThirdFragment, Instance 2");
+//                case 4: return ThirdFragment.newInstance("ThirdFragment, Instance 3");
+                default: return FragmentThree.newInstance("SecondFragment, Default");
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+    }
+
+
+
+
 
     private void setListAdapter(TweetViewFetchAdapter adapt){
         ListView listTask = (ListView) findViewById(R.id.tweetListView);

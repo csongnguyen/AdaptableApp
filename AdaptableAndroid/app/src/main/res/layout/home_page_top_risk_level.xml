@@ -1,0 +1,103 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:id="@+id/home_risk_layout"
+    >
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.85">
+        <ImageView
+            android:id="@+id/risk_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/level_icon"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/state_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/california_map"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@id/risk_level"
+
+            />
+
+        <com.adaptableandroid.TypefacedTextView
+            xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+            my_namespace:typeface="Roboto-Regular.ttf"
+            android:id="@+id/disaster_condition_comment"
+            android:text="90.45% of Yolo County, CA"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/Black"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/state_image"
+            android:layout_centerVertical="true"
+            />
+
+        <com.adaptableandroid.TypefacedTextView
+            xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+            my_namespace:typeface="Roboto-Regular.ttf"
+            android:id="@+id/disaster_condition_title"
+            android:text="Drought Conditions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/Black"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/state_image"
+            android:layout_above="@id/disaster_condition_comment"/>
+        <!--android:layout_toRightOf="@+id/user_profile_picture"-->
+        <!--android:layout_toEndOf="@+id/user_profile_picture"-->
+
+        <com.adaptableandroid.TypefacedTextView
+            xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+            my_namespace:typeface="Roboto-Regular.ttf"
+            android:id="@+id/disaster_condition_date"
+            android:text="Updated 5/29/2015"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/Black"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/state_image"
+            android:layout_below="@id/disaster_condition_comment"/>
+    </RelativeLayout>
+
+    <!--<RelativeLayout-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="0.1"-->
+        <!--android:layout_below="@id/state_image"-->
+        <!--android:background="#5dd848"-->
+        <!-->-->
+
+        <!--<View android:id="@+id/circle1"-->
+            <!--android:layout_width="7dp"-->
+            <!--android:layout_height="7dp"-->
+            <!--android:background="@drawable/circle"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_marginBottom="5dp"-->
+            <!--android:layout_marginRight="20dp"/>-->
+
+        <!--<View android:id="@+id/circle2"-->
+            <!--android:layout_width="7dp"-->
+            <!--android:layout_height="7dp"-->
+            <!--android:background="@drawable/circle"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_toLeftOf="@id/circle1"-->
+            <!--android:layout_marginRight="5dp"/>-->
+
+    <!--</RelativeLayout>-->
+
+
+
+
+</LinearLayout>
