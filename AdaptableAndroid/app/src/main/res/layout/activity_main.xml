@@ -174,12 +174,13 @@
                 android:layout_toRightOf="@id/advisoryWarningImage"
                 />
             <ImageView
-                android:layout_width="50dp"
+                android:layout_width="25dp"
                 android:layout_height="50dp"
-                android:src="@drawable/forward_slider"
+                android:src="@drawable/swipe_left"
+                android:alpha="0.3"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-            />
+                android:layout_marginRight="-3dp" />
 
         </RelativeLayout>
         <!--android:layout_height="wrap_content"-->

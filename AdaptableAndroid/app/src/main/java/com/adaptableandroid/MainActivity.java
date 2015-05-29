@@ -506,7 +506,7 @@ public boolean onOptionsItemSelected(MenuItem item) {
     }
 
     public void goToDisasters(View view){
-        view.startAnimation(AnimationUtils.loadAnimation(view.getContext(), R.anim.move_right_out_activity));
+        view.startAnimation(AnimationUtils.loadAnimation(view.getContext(), R.anim.move_left_out_activity));
         Intent intent = new Intent(this, DisplayDisastersActivity.class);
         startActivity(intent);
 

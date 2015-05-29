@@ -62,6 +62,7 @@
                 app:mborder_color="@color/white"
                 app:mborder_width="0dp"
                 app:mshadow="true"
+                android:alpha="0.68"
                 />
 
             <com.adaptableandroid.TypefacedTextView

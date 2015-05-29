@@ -60,7 +60,7 @@ import pl.pawelkleczkowski.customgauge.CustomGauge;
  */
 public class DisplayDisastersActivity extends ActionBarActivity {
     MyAppSectionsPagerAdapter mAppSectionsPagerAdapter;
-    ViewPager mViewPager;
+    CustomViewPager mViewPager;
     public static int goToDisasterNumber;
 
     ProgressDialog pDialog;
@@ -151,6 +151,10 @@ public class DisplayDisastersActivity extends ActionBarActivity {
 
     private ExpandableListAdapter setAdapter(List<GroupItem> gItems, int percentRisk){
         return new ExpandableListAdapter(DisplayDisastersActivity.this, gItems, "", percentRisk);
+    }
+
+    public void setSwipeable(boolean cond){
+        mViewPager.setSwipeable(cond);
     }
 
     /**
@@ -250,7 +254,8 @@ public class DisplayDisastersActivity extends ActionBarActivity {
         public static final String ARG_DROUGHT_PERCENT = "drought_percent";
         public static final String ARG_DROUGHT_COND = "drought_condition";
         public static final String ARG_CITY = "city";
-        public ImageView lArrow, rArrow;
+        public ImageView lArrow, rArrow, checklistPreview;
+        public TextView riskStatus;
         private View rootView;
         SharedPreferences sp;
 
@@ -284,7 +289,32 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                     (args.getInt(StringUtils.ARG_DISASTER_NUMBER) + 1) + " of " + args.getInt(StringUtils.ARG_TOTAL_DISASTERS));
 
 
-            TextView riskStatus = (TextView) rootView.findViewById(R.id.my_risk_status_text);
+            riskStatus = (TextView) rootView.findViewById(R.id.my_risk_status_text);
+            riskStatus.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if(MotionEvent.ACTION_DOWN == event.getAction()){
+                        v.setPivotX(0.5f);
+                        v.setPivotY(0.5f);
+                        v.setScaleX(0.97f);
+                        v.setScaleY(0.97f);
+                        v.setAlpha(0.3f);
+                        ((DisplayDisastersActivity) getActivity()).setSwipeable(false);
+                    } else if(MotionEvent.ACTION_UP == event.getAction()){
+                        v.setAlpha(0.68f);
+                        v.setScaleX(1);
+                        v.setScaleY(1);
+                        ((DisplayDisastersActivity) getActivity()).setSwipeable(true);
+                        v.performClick();
+                    } else if(MotionEvent.ACTION_CANCEL == event.getAction()){
+                        v.setAlpha(0.68f);
+                        v.setScaleX(1);
+                        v.setScaleY(1);
+                        ((DisplayDisastersActivity) getActivity()).setSwipeable(true);
+                    }
+                    return true;
+                }
+            });
             String city = args.getString(ARG_CITY);
             switch(args.getString(StringUtils.ARG_DISASTER)){
                 case "Drought":
@@ -357,7 +387,34 @@ public class DisplayDisastersActivity extends ActionBarActivity {
             lArrow = leftArrow;
             rArrow = rightArrow;
 
-            ImageView checklistPreview = (ImageView)rootView.findViewById(R.id.checklist_icon);
+            checklistPreview = (ImageView)rootView.findViewById(R.id.checklist_icon);
+            checklistPreview.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if(MotionEvent.ACTION_DOWN == event.getAction()){
+                        v.setPivotX(0.5f);
+                        v.setPivotY(0.5f);
+                        v.setScaleX(0.97f);
+                        v.setScaleY(0.97f);
+                        v.setAlpha(0.3f);
+                        ((DisplayDisastersActivity) getActivity()).setSwipeable(false);
+                    } else if(MotionEvent.ACTION_UP == event.getAction()){
+                        v.setAlpha(0.68f);
+                        v.setScaleX(1);
+                        v.setScaleY(1);
+                        ((DisplayDisastersActivity) getActivity()).setSwipeable(true);
+                        v.performClick();
+                    } else if(MotionEvent.ACTION_CANCEL == event.getAction()){
+                        v.setAlpha(0.68f);
+                        v.setScaleX(1);
+                        v.setScaleY(1);
+                        ((DisplayDisastersActivity) getActivity()).setSwipeable(true);
+                    }
+                    return true;
+                }
+
+
+            });
             checklistPreview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -369,6 +426,19 @@ public class DisplayDisastersActivity extends ActionBarActivity {
 //                        startActivity(intent);
                 }
             });
+
+
+                checklistPreview.setScaleX(1);
+                checklistPreview.setScaleY(1);
+                View v = (View) (checklistPreview);
+                v.setAlpha(0.68f);
+
+
+                riskStatus.setScaleX(1);
+                riskStatus.setScaleY(1);
+                riskStatus.setAlpha(0.68f);
+
+
             TextView checklistPercent = (TextView)rootView.findViewById(R.id.checklist_percent_disaster);
 
             int totalCompleted = sp.getInt(StringUtils.CHECKLIST_COMPLETED + args.getInt(StringUtils.ARG_DISASTER_NUMBER), -1);
@@ -679,21 +749,33 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                     editor.commit();
 
                     mAppSectionsPagerAdapter = new MyAppSectionsPagerAdapter(getSupportFragmentManager(), impactAdapters, myLists, sharedPreferences);
-                    mViewPager = (ViewPager) findViewById(R.id.pager_disasters);
+                    mViewPager = (CustomViewPager) findViewById(R.id.pager_disasters);
                     mViewPager.setAdapter(mAppSectionsPagerAdapter);
                     mViewPager.setCurrentItem(goToDisasterNumber);
 
-                    System.out.println("Setting on page change listener for DisplayDisasterActivity...");
-                    mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//                    System.out.println("Setting on page change listener for DisplayDisasterActivity...");
+                    mViewPager.setOnPageChangeListener(new CustomViewPager.OnPageChangeListener() {
                         @Override
                         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+//                            if(mAppSectionsPagerAdapter.getItem(goToDisasterNumber).checklistPreview != null){
+//
+//                                mAppSectionsPagerAdapter.getItem(goToDisasterNumber).checklistPreview.setScaleX(1);
+//                                mAppSectionsPagerAdapter.getItem(goToDisasterNumber).checklistPreview.setScaleY(1);
+//                                View v = (View) (mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).checklistPreview);
+//                                        v.setAlpha(0.68f);
+//                            }
+//                            if(mAppSectionsPagerAdapter.getItem(goToDisasterNumber).riskStatus != null){
+//                                mAppSectionsPagerAdapter.getItem(goToDisasterNumber).riskStatus.setScaleX(1);
+//                                mAppSectionsPagerAdapter.getItem(goToDisasterNumber).riskStatus.setScaleY(1);
+//                                mAppSectionsPagerAdapter.getItem(goToDisasterNumber).riskStatus.setAlpha(0.68f);
+//                            }
                             goToDisasterNumber = mViewPager.getCurrentItem();
                             if(mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).rArrow == null){
-                                System.out.println("Apparently the right arrow is null for "+ mViewPager.getCurrentItem());
+//                                System.out.println("Apparently the right arrow is null for "+ mViewPager.getCurrentItem());
                             }
                             if(mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).rArrow != null){
-                                Log.d("onPageScrolled", "DisplayDisastersActivity now on page " + mViewPager.getCurrentItem());
+//                                Log.d("onPageScrolled", "DisplayDisastersActivity now on page " + mViewPager.getCurrentItem());
                                 mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).rArrow.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
@@ -713,6 +795,8 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                                     }
                                 });
                             }
+
+
                         }
 
                         @Override

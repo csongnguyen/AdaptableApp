@@ -30,7 +30,8 @@
             android:layout_below="@id/logo"
             android:layout_alignLeft="@id/logo"
             android:layout_marginTop="-40dp"
-            android:textAllCaps="true"/>
+            android:textAllCaps="true"
+            android:paddingTop="10dp" />
         <!--android:layout_toRightOf="@+id/user_profile_picture"-->
         <!--android:layout_toEndOf="@+id/user_profile_picture"-->
 
@@ -48,7 +49,7 @@
             android:layout_alignTop="@id/user_level_main"
             android:textAllCaps="true"
             android:textStyle="bold"
-            />
+            android:paddingTop="10dp" />
 
         <com.adaptableandroid.TypefacedTextView
             xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
