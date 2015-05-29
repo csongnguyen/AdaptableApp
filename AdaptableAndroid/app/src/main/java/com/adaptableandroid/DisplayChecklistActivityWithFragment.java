@@ -59,30 +59,33 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
     ProgressDialog pDialog;
     MyAppSectionsPagerAdapter mAppSectionsPagerAdapter;
     ViewPager mViewPager;
-    int goToDisasterNumber;
+    public static int goToDisasterNumber;
 
     CheckBox checkBoxToBeUpdated;
 
     public static final String TAG_STATUS = "is_completed";
     public static final String TAG_SHORT = "shortWarning";
     public static final String TAG_LONG = "longWarning";
-    private static final String UPDATED_CHECKLIST = "updatedChecklist";
     public static final String DISASTER_TYPE = "disaster_type";
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        goToDisasterNumber = intent.getIntExtra(DisplayDisastersActivity.MyLaunchpadSectionFragment.ARG_DISASTER_NUMBER, 0);
+        goToDisasterNumber = intent.getIntExtra(StringUtils.ARG_DISASTER_NUMBER, 0);
         Log.d("got disaster #", "From displaychecklistActivity " + goToDisasterNumber);
         setContentView(R.layout.activity_display_checklists);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+//        actionbar.setHomeAsUpIndicator(R.drawable.home_icon2);
+        actionbar.setDisplayShowTitleEnabled(true);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFF5BA4F3));//0xFF4697b5
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.actionbar);
-        TextView tView = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.actionbarTitle);
-        tView.setText("Checklist");
+//        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+//        getSupportActionBar().setCustomView(R.layout.actionbar);
+//        TextView tView = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.actionbarTitle);
+//        tView.setText("Checklist");
         new DisplayChecklist().execute();
 
     }
@@ -92,7 +95,7 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
         // super.onBackPressed();
 
         Intent intent = new Intent();
-        intent.putExtra(MyLaunchpadSectionFragment.ARG_DISASTER_NUMBER, goToDisasterNumber);
+        intent.putExtra(StringUtils.ARG_DISASTER_NUMBER, goToDisasterNumber);
         setResult(RESULT_OK, intent);
         System.out.println("Passing in goToDisasterNumber from DisplayChecklistActivity " + goToDisasterNumber);
 
@@ -130,14 +133,28 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
     }
 
     @Override
+    public boolean onSupportNavigateUp(){
+        Intent homeIntent = new Intent(this, MainActivity.class);
+        homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(homeIntent);
+//        finish();
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if(id == android.R.id.home){
+            Intent homeIntent = new Intent(this, MainActivity.class);
+            homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(homeIntent);
+        }
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        else if (id == R.id.action_settings) {
             // Set the text view as the activity layout
             try{
                 // We need to get the instance of the LayoutInflater, use the context of this activity
@@ -260,9 +277,9 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
             if(!fragmentMap.containsKey(i)){
                 MyLaunchpadSectionFragment fragment = new MyLaunchpadSectionFragment();
                 Bundle args = new Bundle();
-                args.putString(MyLaunchpadSectionFragment.ARG_DISASTER, StringUtils.disasterTypes[i]);
-                args.putInt(MyLaunchpadSectionFragment.ARG_DISASTER_NUMBER, i);
-                args.putInt(MyLaunchpadSectionFragment.ARG_TOTAL_DISASTERS, getCount());
+                args.putString(StringUtils.ARG_DISASTER, StringUtils.disasterTypes[i]);
+                args.putInt(StringUtils.ARG_DISASTER_NUMBER, i);
+                args.putInt(StringUtils.ARG_TOTAL_DISASTERS, getCount());
                 fragment.setArguments(args);
                 fragment.setAdapter1(listAdapters.get(i));
 
@@ -291,10 +308,11 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
      * A fragment that launches other parts of the demo application.
      */
     public static class MyLaunchpadSectionFragment extends Fragment {
-        public static final String ARG_DISASTER = "disaster_type";
-        public static final String ARG_DISASTER_NUMBER = "disaster_number";
-        public static final String ARG_TOTAL_DISASTERS = "total";
+//        public static final String ARG_DISASTER = "disaster_type";
+//        public static final String ARG_DISASTER_NUMBER = "disaster_number";
+//        public static final String ARG_TOTAL_DISASTERS = "total";
         public ImageView lArrow, rArrow;
+        Bundle args;
 
         MyAdapter adapt1;
         List<Task> mylist;
@@ -302,9 +320,12 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
         View myRootView;
 
         public void setAdapter1(MyAdapter a){
-
             adapt1 = a;
             mylist = a.taskList;
+        }
+
+        public int getArgDisasterNumber(){
+            return args.getInt(StringUtils.ARG_DISASTER_NUMBER);
         }
 
         @Override
@@ -312,15 +333,18 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.activity_display_checklist, container, false);
             myRootView = rootView;
-            System.out.println("Creating view of fragment");
-            Bundle args = getArguments();
-            ((TextView) rootView.findViewById(R.id.checklistProgressViewTitle)).setText(
-                    args.getString(ARG_DISASTER) + " Preparation");
 
-            Log.d("Checklist background ", args.getString(ARG_DISASTER));
-            switch(args.getString(ARG_DISASTER)){
+            System.out.println("Creating view of fragment");
+            args = getArguments();
+
+
+            ((TextView) rootView.findViewById(R.id.checklistProgressViewTitle)).setText(
+                    args.getString(StringUtils.ARG_DISASTER) + " Preparation");
+
+            Log.d("Checklist background", args.getString(StringUtils.ARG_DISASTER));
+            switch(args.getString(StringUtils.ARG_DISASTER)){
                 case "Drought":
-                    rootView.findViewById(R.id.progressBarChecklist).setBackgroundResource(R.drawable.drought_background);
+                    rootView.findViewById(R.id.progressBarChecklist).setBackgroundResource(R.drawable.bg_drought);
                     break;
                 case "Earthquake":
                     rootView.findViewById(R.id.progressBarChecklist).setBackgroundResource(R.drawable.bg_earthquake);
@@ -350,10 +374,10 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
 
             ImageView leftArrow = (ImageView) rootView.findViewById(R.id.riskscreen_left);
             ImageView rightArrow = (ImageView) rootView.findViewById(R.id.riskscreen_right);
-            if(args.getInt(ARG_DISASTER_NUMBER) == 0 ){
+            if(args.getInt(StringUtils.ARG_DISASTER_NUMBER) == 0 ){
                 leftArrow.setVisibility(View.GONE);
             }
-            if(args.getInt(ARG_DISASTER_NUMBER) == args.getInt(ARG_TOTAL_DISASTERS)){
+            if(args.getInt(StringUtils.ARG_DISASTER_NUMBER) == args.getInt(StringUtils.ARG_TOTAL_DISASTERS) - 1){
                 rightArrow.setVisibility(View.GONE);
             }
 
@@ -363,7 +387,7 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
             pbar = (ProgressBar) rootView.findViewById(R.id.progressBarChecklist);
             pbar.setProgress(getNumberOfCompletedTasks());
             pbar.setMax(mylist.size());
-            pbar.setBackgroundResource(R.drawable.drought_background);
+//            pbar.setBackgroundResource(R.drawable.drought_background);
 
             setProgressViews(rootView);
 
@@ -406,8 +430,6 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
             TextView pView2 = (TextView) myRootView.findViewById(R.id.checklistProgressView2);
             pView2.setText(pbar.getProgress() + "/" + pbar.getMax());
         }
-
-
     }
 
     private class MyAdapter extends ArrayAdapter<Task> {
@@ -425,7 +447,7 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
             CheckBox chk;
-            Button info;
+            ImageView info;
             LayoutInflater inflater;
 
             if (convertView == null){
@@ -433,7 +455,7 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
 
                 convertView = inflater.inflate(R.layout.list_inner_view, parent, false);
                 chk = (CheckBox) convertView.findViewById(R.id.checkBox1);
-                info = (Button) convertView.findViewById(R.id.infoButton);
+                info = (ImageView) convertView.findViewById(R.id.infoButton);
                 convertView.setTag(R.id.checkBox1,chk);
                 convertView.setTag(R.id.infoButton, info);
 
@@ -457,9 +479,16 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
 
 
                         int maxList = mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).getPBarMax();
-                        Log.d("MVIEWPAGER ON CHK CLICK", "" + mViewPager.getCurrentItem());
+//                        Log.d("MVIEWPAGER ON CHK CLICK", "" + mViewPager.getCurrentItem());
                         int numberCompleted = mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).getNumberOfCompletedTasks();
                         mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).setPBarProgress();
+
+                        SharedPreferences sp = getSharedPreferences(StringUtils.MYPREFERENCES, Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        int disasterNumber = mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).getArgDisasterNumber();
+                        editor.putInt(StringUtils.CHECKLIST_COMPLETED + disasterNumber, numberCompleted);
+                        editor.putInt(StringUtils.CHECKLIST_TOTAL + disasterNumber, maxList);
+                        editor.commit();
 
                         if(numberCompleted == maxList){
                             Toast.makeText(getApplicationContext(), "Congratulations, "
@@ -473,14 +502,14 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
                 info.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View v){
-                        Button bu = (Button) v;
+                        ImageView bu = (ImageView) v;
                         Task task = (Task) bu.getTag();
                         initiatePopupWindow(task.getLongName());
                     }
                 });
             } else{
                 chk = (CheckBox) convertView.getTag(R.id.checkBox1);
-                info = (Button) convertView.getTag(R.id.infoButton);
+                info = (ImageView) convertView.getTag(R.id.infoButton);
             }
 
             Task current = taskList.get(position);
@@ -580,11 +609,11 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
         @Override
         protected void onPostExecute(String someString){
             try {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    public void run() {
-                        pDialog.dismiss();
-                    }}, 300);  // 1000 milliseconds
+//                Handler handler = new Handler();
+//                handler.postDelayed(new Runnable() {
+//                    public void run() {
+                pDialog.dismiss();
+//                    }}, 300);  // 1000 milliseconds
                 List<MyAdapter> myAdapters = new ArrayList<MyAdapter>();
                 for(int a = 0; a < jsonObjects.length; a++){
                     JSONObject jsonObject = jsonObjects[a];
@@ -614,6 +643,42 @@ public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
                 mViewPager = (ViewPager) findViewById(R.id.pager_checklists);
                 mViewPager.setAdapter(mAppSectionsPagerAdapter);
                 mViewPager.setCurrentItem(goToDisasterNumber);
+
+                mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//                        Log.d("onPageScrolled", "DisplayChecklistsActivity now on page " + mViewPager.getCurrentItem());
+                        goToDisasterNumber = mViewPager.getCurrentItem();
+                        if(mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).rArrow != null){
+                            mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).rArrow.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if(mViewPager.getCurrentItem() < (mAppSectionsPagerAdapter.getCount()-1)){
+                                        mViewPager.setCurrentItem(mViewPager.getCurrentItem()+1);
+                                    }
+                                }
+                            });
+                        }
+                        if(mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).lArrow != null){
+                            mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).lArrow.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if(mViewPager.getCurrentItem() > 0){
+                                        mViewPager.setCurrentItem(mViewPager.getCurrentItem()-1);
+                                    }
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onPageSelected(int position) {
+                    }
+
+                    @Override
+                    public void onPageScrollStateChanged(int state) {
+                    }
+                });
 
             }
             catch(Exception e){

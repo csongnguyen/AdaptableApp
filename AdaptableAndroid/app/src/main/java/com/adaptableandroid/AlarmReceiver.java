@@ -26,14 +26,17 @@ import org.json.JSONObject;
 /**
  * Created by Connie on 4/23/2015.
  */
-public class AlarmReceiver extends BroadcastReceiver implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class AlarmReceiver extends BroadcastReceiver{
     Context context;
     Address mAddress;
     LocationManager locationManager;
     GoogleApiClient mGoogleApiClient;
 
-    Location mLastLocation;
+//    Location mLastLocation;
+    SharedPreferences sp;
 
+    public static String TAG_CURRENT_LONGITUDE = "current_longitude";
+    public static String TAG_CURRENT_LATITUDE = "current_latitude";
     public static String TAG_ZIP = "zip_id";
     public static String TAG_CITY = "city";
     public static String TAG_NEW_DROUGHT_CONDITION = "New_Drought_Condition";
@@ -66,9 +69,12 @@ public class AlarmReceiver extends BroadcastReceiver implements GoogleApiClient.
     public void onReceive(Context context, Intent intent){
         this.context = context;
         WakeLocker.acquire(context);
-        Log.d("check", "if there is disaster update");
-        buildGoogleApiClient();
-        mGoogleApiClient.connect();
+        Log.d("check", "if there is disaster update through alarmReceiver");
+        sp = context.getSharedPreferences(StringUtils.MYPREFERENCES, Context.MODE_PRIVATE);
+
+        checkLocation();
+//        buildGoogleApiClient();
+//        mGoogleApiClient.connect();
 
 
 //        NotificationManagerCompat manager = NotificationManagerCompat.from(context);
@@ -91,44 +97,44 @@ public class AlarmReceiver extends BroadcastReceiver implements GoogleApiClient.
 
     }
 
-    @Override
-    public void onConnected(Bundle connectionHint){
-        while(mLastLocation == null){
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-
-        }
-            Log.d("my Location is not null", "TRUE");
-            checkLocation();
-//            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-//            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-    }
-
-    @Override
-    public void onConnectionSuspended(int cause) {
-        // The connection has been interrupted.
-        // Disable any UI components that depend on Google APIs
-        // until onConnected() is called.
-
-        Log.d("GOOGLE_API_CLIENT", "suspended");
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        // This callback is important for handling errors that
-        // may occur while attempting to connect with Google.
-
-        // More about this in the next section.
-        Log.e("GOOGLE_API_CLIENT", "Failed to connect");
-    }
-
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(context)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
+//    @Override
+//    public void onConnected(Bundle connectionHint){
+//        while(mLastLocation == null){
+//            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+//                    mGoogleApiClient);
+//
+//        }
+//            Log.d("my Location is not null", "TRUE");
+//            checkLocation();
+////            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
+////            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+//    }
+//
+//    @Override
+//    public void onConnectionSuspended(int cause) {
+//        // The connection has been interrupted.
+//        // Disable any UI components that depend on Google APIs
+//        // until onConnected() is called.
+//
+//        Log.d("GOOGLE_API_CLIENT", "suspended");
+//    }
+//
+//    @Override
+//    public void onConnectionFailed(ConnectionResult result) {
+//        // This callback is important for handling errors that
+//        // may occur while attempting to connect with Google.
+//
+//        // More about this in the next section.
+//        Log.e("GOOGLE_API_CLIENT", "Failed to connect");
+//    }
+//
+//    protected synchronized void buildGoogleApiClient() {
+//        mGoogleApiClient = new GoogleApiClient.Builder(context)
+//                .addConnectionCallbacks(this)
+//                .addOnConnectionFailedListener(this)
+//                .addApi(LocationServices.API)
+//                .build();
+//    }
 
     /*http://www.vogella.com/tutorials/AndroidNotifications/article.html*/
     public void sendNotification(StringUtils.DisasterType disasterTag, int droughtCondition, double percent){
@@ -163,112 +169,7 @@ public class AlarmReceiver extends BroadcastReceiver implements GoogleApiClient.
         WakeLocker.release();
 
     }
-//
-//    public static getLocalCurrentDroughtConditions(){
-//
-//    }
 
-    private void checkDroughtConditionForZip(String zip, JSONObject externalDBDroughtCondition){
-
-        // Now, check this jsonObject against the values supplied in the sqlitedatabase
-        DatabaseHelper myDBHelper =  new DatabaseHelper(context);
-        try {
-            String week =  externalDBDroughtCondition.getString(TAG_WEEK);
-            String county =  externalDBDroughtCondition.getString(TAG_COUNTY);
-            droughtLevelPercentages[0] =  externalDBDroughtCondition.getDouble(TAG_NOTHING);
-            droughtLevelPercentages[1] =  externalDBDroughtCondition.getDouble(TAG_D0);
-            droughtLevelPercentages[2] =  externalDBDroughtCondition.getDouble(TAG_D1);
-            droughtLevelPercentages[3] =  externalDBDroughtCondition.getDouble(TAG_D2);
-            droughtLevelPercentages[4] =  externalDBDroughtCondition.getDouble(TAG_D3);
-            droughtLevelPercentages[5] =  externalDBDroughtCondition.getDouble(TAG_D4);
-            String validStart =  externalDBDroughtCondition.getString(TAG_VALID_START);
-            String validEnd =  externalDBDroughtCondition.getString(TAG_VALID_END);
-
-            myDBHelper.openDatabase();
-//                    myDBHelper.getDroughtInfo();
-            Cursor sqliteObject = myDBHelper.getDroughtConditionForZip(zip);
-            int newDroughtCond = -1;
-            double newDroughtPercent = -1;
-            if(sqliteObject == null){
-                System.out.println("Adding new location " + zip + " to my risk locations");
-                if(droughtLevelPercentages[0] == 100){
-                    newDroughtCond = 0;
-                    newDroughtPercent = droughtLevelPercentages[0];
-                }else{
-                    System.out.println("There is a drought. Must be d1 or higher. " + (droughtLevelPercentages.length) + " total drought levels");
-                    for(int i = 1; i < droughtLevelPercentages.length; i++){
-                            if(droughtLevelPercentages[i] < 100 || i == (droughtLevelPercentages.length - 1)){// && droughtLevelPercentages[i] < 50){
-                                newDroughtCond = i;
-                                newDroughtPercent = droughtLevelPercentages[i];
-                                break;
-                            }
-
-//                            else if(droughtLevelPercentages[i] < 100 && droughtLevelPercentages[i] > 50){
-//                                newDroughtCond = i;
-//                                newDroughtPercent = droughtLevelPercentages[i];
-//                            }
-                    }
-                }
-                System.out.println("new drought condition: " + newDroughtCond);
-                System.out.println("new drought percentage: " + newDroughtPercent);
-                myDBHelper.addDroughtLocation(zip, newDroughtCond, newDroughtPercent);
-                if(newDroughtCond >= 3){
-                    sendNotification(StringUtils.DisasterType.DROUGHT, newDroughtCond, newDroughtPercent);
-                }
-            }
-            else{
-                if(sqliteObject.moveToFirst()){
-
-                    // I want to change the parameters no matter what, but first I want to check
-                    // if it is necessary to notify the user that their drought conditions
-                    // have changed.
-                    newDroughtCond = sqliteObject.getInt(sqliteObject.getColumnIndex(StringUtils.TAG_DROUGHT_COND));
-                    newDroughtPercent = sqliteObject.getDouble(sqliteObject.getColumnIndex(StringUtils.TAG_PERCENTAGE));
-                    System.out.println("Found from personal drought table: " + sqliteObject.getString(sqliteObject.getColumnIndex(StringUtils.TAG_ZIP)));
-                    System.out.println("Drought condition and drought percent: " + sqliteObject.getString(sqliteObject.getColumnIndex(StringUtils.TAG_DROUGHT_COND)) + ", " + sqliteObject.getString(sqliteObject.getColumnIndex(StringUtils.TAG_PERCENTAGE)));
-
-                    if(droughtLevelPercentages[newDroughtCond] != newDroughtPercent){
-                        if(droughtLevelPercentages[newDroughtCond] >= 100
-                                && newDroughtCond < (droughtLevelPercentages.length -1)){
-                            newDroughtCond = newDroughtCond + 1;
-                            sendNotification(StringUtils.DisasterType.DROUGHT, newDroughtCond, droughtLevelPercentages[newDroughtCond]);
-                        }
-                        else if(droughtLevelPercentages[newDroughtCond] == 0
-                                && newDroughtCond > 0){
-                            newDroughtCond = newDroughtCond - 1;
-                            sendNotification(StringUtils.DisasterType.DROUGHT, newDroughtCond, droughtLevelPercentages[newDroughtCond]);
-                        }
-                        newDroughtPercent = droughtLevelPercentages[newDroughtCond];
-                        myDBHelper.updateDroughtLocation(zip, newDroughtCond, newDroughtPercent);
-                    }
-                    // in the case where the current drought condition is 100, but the new drought condition remains
-                    // 100 but the other drought conditions keep increasing
-                    else if(droughtLevelPercentages[newDroughtCond] == 100 && newDroughtCond < (droughtLevelPercentages.length -1)){
-                        if(droughtLevelPercentages[newDroughtCond+1] > 0){
-                            newDroughtCond = newDroughtCond+1;
-                            newDroughtPercent = droughtLevelPercentages[newDroughtCond];
-                            sendNotification(StringUtils.DisasterType.DROUGHT, newDroughtCond, newDroughtPercent);
-                            myDBHelper.updateDroughtLocation(zip, newDroughtCond, newDroughtPercent);
-                        }
-                    }
-
-                }
-            }
-            System.out.println("About to add locations to shared preferences in AlarmReceiver");
-            SharedPreferences sp = context.getSharedPreferences(StringUtils.MYPREFERENCES, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putString(TAG_CITY, mAddress.getLocality());
-            editor.putString(TAG_ZIP, mAddress.getPostalCode());
-            editor.putString(TAG_STATE, mAddress.getAdminArea());
-            editor.putInt(TAG_NEW_DROUGHT_CONDITION, newDroughtCond);
-            editor.putFloat(TAG_NEW_DROUGHT_PERCENT, (float)newDroughtPercent);
-            editor.commit();
-            System.out.println("Added locations to shared preferences in AlarmReceiver");
-        }catch(Exception e){
-            System.out.println("Cannot open database to check drought conditions in your area b/c: " + e.toString());
-        }
-
-    }
 
 //    public Address getAddress(double latitude, double longitude){
 ////        StringBuilder result = new StringBuilder();
@@ -333,11 +234,14 @@ public class AlarmReceiver extends BroadcastReceiver implements GoogleApiClient.
 //                System.out.println("Current location latitude, longitude:" + currentLocation.getLatitude() + "," + currentLocation.getLongitude());
                 try{
 
-                    if(mLastLocation != null){
-                        currentLocation = mLastLocation;
-                    }
-                    location = currentLocation.getLatitude() + " " + currentLocation.getLongitude();
-                    mAddress = LocationUtils.getAddress(context, currentLocation.getLatitude(), currentLocation.getLongitude());
+//                    if(mLastLocation != null){
+//                        currentLocation = mLastLocation;
+//                    }
+                    Double latitude = Double.parseDouble(sp.getString(TAG_CURRENT_LATITUDE, "0")); // = currentLocation.getLatitude()
+                    Double longitude = Double.parseDouble(sp.getString(TAG_CURRENT_LONGITUDE, "0")); // = currentLocation.getLongitude()
+
+                    location = latitude + " " + longitude;
+                    mAddress = LocationUtils.getAddress(context, latitude, longitude);
 
                 }catch(Exception e){
                     location = "";
@@ -378,5 +282,108 @@ public class AlarmReceiver extends BroadcastReceiver implements GoogleApiClient.
             }
             return null;
         }
+    }
+
+    private void checkDroughtConditionForZip(String zip, JSONObject externalDBDroughtCondition){
+
+        // Now, check this jsonObject against the values supplied in the sqlitedatabase
+        DatabaseHelper myDBHelper =  new DatabaseHelper(context);
+        try {
+            String week =  externalDBDroughtCondition.getString(TAG_WEEK);
+            String county =  externalDBDroughtCondition.getString(TAG_COUNTY);
+            droughtLevelPercentages[0] =  externalDBDroughtCondition.getDouble(TAG_NOTHING);
+            droughtLevelPercentages[1] =  externalDBDroughtCondition.getDouble(TAG_D0);
+            droughtLevelPercentages[2] =  externalDBDroughtCondition.getDouble(TAG_D1);
+            droughtLevelPercentages[3] =  externalDBDroughtCondition.getDouble(TAG_D2);
+            droughtLevelPercentages[4] =  externalDBDroughtCondition.getDouble(TAG_D3);
+            droughtLevelPercentages[5] =  externalDBDroughtCondition.getDouble(TAG_D4);
+            String validStart =  externalDBDroughtCondition.getString(TAG_VALID_START);
+            String validEnd =  externalDBDroughtCondition.getString(TAG_VALID_END);
+
+            myDBHelper.openDatabase();
+//                    myDBHelper.getDroughtInfo();
+            Cursor sqliteObject = myDBHelper.getDroughtConditionForZip(zip);
+            int newDroughtCond = -1;
+            double newDroughtPercent = -1;
+            if(sqliteObject == null){
+                System.out.println("Adding new location " + zip + " to my risk locations");
+                if(droughtLevelPercentages[0] == 100){
+                    newDroughtCond = 0;
+                    newDroughtPercent = droughtLevelPercentages[0];
+                }else{
+                    System.out.println("There is a drought. Must be d1 or higher. " + (droughtLevelPercentages.length) + " total drought levels");
+                    for(int i = 1; i < droughtLevelPercentages.length; i++){
+                        if(droughtLevelPercentages[i] < 100 || i == (droughtLevelPercentages.length - 1)){// && droughtLevelPercentages[i] < 50){
+                            newDroughtCond = i;
+                            newDroughtPercent = droughtLevelPercentages[i];
+                            break;
+                        }
+
+//                            else if(droughtLevelPercentages[i] < 100 && droughtLevelPercentages[i] > 50){
+//                                newDroughtCond = i;
+//                                newDroughtPercent = droughtLevelPercentages[i];
+//                            }
+                    }
+                }
+                System.out.println("new drought condition: " + newDroughtCond);
+                System.out.println("new drought percentage: " + newDroughtPercent);
+                myDBHelper.addDroughtLocation(zip, newDroughtCond, newDroughtPercent);
+                if(newDroughtCond >= 3){
+                    sendNotification(StringUtils.DisasterType.DROUGHT, newDroughtCond, newDroughtPercent);
+                }
+            }
+            else{
+                if(sqliteObject.moveToFirst()){
+
+                    // I want to change the parameters no matter what, but first I want to check
+                    // if it is necessary to notify the user that their drought conditions
+                    // have changed.
+                    newDroughtCond = sqliteObject.getInt(sqliteObject.getColumnIndex(StringUtils.TAG_DROUGHT_COND));
+                    newDroughtPercent = sqliteObject.getDouble(sqliteObject.getColumnIndex(StringUtils.TAG_PERCENTAGE));
+                    System.out.println("Found from personal drought table: " + sqliteObject.getString(sqliteObject.getColumnIndex(StringUtils.TAG_ZIP)));
+                    System.out.println("Drought condition and drought percent: " + sqliteObject.getString(sqliteObject.getColumnIndex(StringUtils.TAG_DROUGHT_COND)) + ", " + sqliteObject.getString(sqliteObject.getColumnIndex(StringUtils.TAG_PERCENTAGE)));
+
+                    if(droughtLevelPercentages[newDroughtCond] != newDroughtPercent){
+                        if(droughtLevelPercentages[newDroughtCond] >= 100
+                                && newDroughtCond < (droughtLevelPercentages.length -1)){
+                            newDroughtCond = newDroughtCond + 1;
+                            sendNotification(StringUtils.DisasterType.DROUGHT, newDroughtCond, droughtLevelPercentages[newDroughtCond]);
+                        }
+                        else if(droughtLevelPercentages[newDroughtCond] == 0
+                                && newDroughtCond > 0){
+                            newDroughtCond = newDroughtCond - 1;
+                            sendNotification(StringUtils.DisasterType.DROUGHT, newDroughtCond, droughtLevelPercentages[newDroughtCond]);
+                        }
+                        newDroughtPercent = droughtLevelPercentages[newDroughtCond];
+                        myDBHelper.updateDroughtLocation(zip, newDroughtCond, newDroughtPercent);
+                    }
+                    // in the case where the current drought condition is 100, but the new drought condition remains
+                    // 100 but the other drought conditions keep increasing
+                    else if(droughtLevelPercentages[newDroughtCond] == 100 && newDroughtCond < (droughtLevelPercentages.length -1)){
+                        if(droughtLevelPercentages[newDroughtCond+1] > 0){
+                            newDroughtCond = newDroughtCond+1;
+                            newDroughtPercent = droughtLevelPercentages[newDroughtCond];
+                            sendNotification(StringUtils.DisasterType.DROUGHT, newDroughtCond, newDroughtPercent);
+                            myDBHelper.updateDroughtLocation(zip, newDroughtCond, newDroughtPercent);
+                        }
+                    }
+
+                }
+            }
+            System.out.println("AlarmReceiver: About to add locations to shared preferences");
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString(TAG_CITY, mAddress.getLocality());
+            editor.putString(TAG_ZIP, mAddress.getPostalCode());
+            editor.putString(TAG_STATE, mAddress.getAdminArea());
+            editor.putInt(TAG_NEW_DROUGHT_CONDITION, newDroughtCond);
+            editor.putFloat(TAG_NEW_DROUGHT_PERCENT, (float)newDroughtPercent);
+//            editor.putString(TAG_CURRENT_LATITUDE, mAddress.getLatitude() + "");
+//            editor.putString(TAG_CURRENT_LONGITUDE, mAddress.getLongitude() + "");
+            editor.commit();
+            System.out.println("AlarmReceiver: Added locations to shared preferences");
+        }catch(Exception e){
+            System.out.println("Cannot open database to check drought conditions in your area b/c: " + e.toString());
+        }
+
     }
 }

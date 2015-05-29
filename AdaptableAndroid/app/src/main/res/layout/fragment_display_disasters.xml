@@ -41,7 +41,7 @@
             <com.adaptableandroid.TypefacedTextView
                 xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
                 android:id="@+id/checklistHeadLabel"
-                android:text="CHECKLIST"
+                android:text="MY CHECKLIST"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#FFF"
@@ -132,6 +132,18 @@
                 android:paddingRight="10dp"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
+                />
+
+            <ImageView
+                android:id="@+id/down_arrow"
+                android:layout_width="75dp"
+                android:layout_height="24dp"
+                android:src="@drawable/read_more_button"
+                android:layout_gravity="right"
+                android:alpha="1.0"
+                android:layout_centerHorizontal="true"
+                android:layout_alignBottom="@id/my_risk_status_text"
+                android:scaleType="center"
                 />
         </RelativeLayout>
     </RelativeLayout>

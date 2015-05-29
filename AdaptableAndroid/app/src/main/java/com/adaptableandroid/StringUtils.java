@@ -7,6 +7,14 @@ public class StringUtils {
     public final static String MYPREFERENCES = "MyPrefs";
     public static final String TAG_SUCCESS = "success";
 
+    public static final String CHECKLIST_COMPLETED = "checklist_completed";
+    public static final String CHECKLIST_TOTAL = "checklist_total";
+    public static final String ARG_DISASTER = "disaster_type";
+    public static final String ARG_DISASTER_NUMBER = "disaster_number";
+    public static final String ARG_TOTAL_DISASTERS = "total";
+
+    public static final String WEB_VIEW = "website_url";
+
     public final static String DROUGHT_TABLE = "drought_data";
     public final static String TAG_PRODUCTS = "products";
     // These are from sqlite database

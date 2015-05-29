@@ -37,6 +37,7 @@
                     android:endColor="@color/IndianRed"
                     android:startColor="@color/IndianRed"
                      />
+                <!--"@color/IndianRed"-->
                 <!--android:endColor="#26ce61"-->
                 <!--android:startColor="#26ce61"-->
             </shape>

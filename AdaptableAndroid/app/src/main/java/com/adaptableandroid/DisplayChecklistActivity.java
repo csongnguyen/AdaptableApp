@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
@@ -231,7 +232,7 @@ public class DisplayChecklistActivity extends ActionBarActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
             CheckBox chk;
-            Button info;
+            ImageView info;
             LayoutInflater inflater;
 
             if (convertView == null){
@@ -239,7 +240,7 @@ public class DisplayChecklistActivity extends ActionBarActivity {
 
                 convertView = inflater.inflate(R.layout.list_inner_view, parent, false);
                 chk = (CheckBox) convertView.findViewById(R.id.checkBox1);
-                info = (Button) convertView.findViewById(R.id.infoButton);
+                info = (ImageView) convertView.findViewById(R.id.infoButton);
                 convertView.setTag(R.id.checkBox1,chk);
                 convertView.setTag(R.id.infoButton, info);
 
@@ -278,14 +279,14 @@ public class DisplayChecklistActivity extends ActionBarActivity {
                 info.setOnClickListener(new View.OnClickListener(){
                     @Override
                     public void onClick(View v){
-                        Button bu = (Button) v;
+                        ImageView bu = (ImageView) v;
                         Task task = (Task) bu.getTag();
                         initiatePopupWindow(task.getLongName());
                     }
                 });
             } else{
                 chk = (CheckBox) convertView.getTag(R.id.checkBox1);
-                info = (Button) convertView.getTag(R.id.infoButton);
+                info = (ImageView) convertView.getTag(R.id.infoButton);
             }
 
             Task current = taskList.get(position);

@@ -127,12 +127,12 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         TextView advisoryWarningText = (TextView) findViewById(R.id.advisory_warning);
         advisoryWarningText.setText(Html.fromHtml("Drought Advisory <br><small> Emergency water restrictions declared.</small>"));
 
-        buildGoogleApiClient();
-
         String consumerKey = "OG3xipNKmjVDwN2aaoRiMDTPv";
         String consumerSecret = "yht0R0ugim0k646P7V4NTsW8MDs9bNCAird8xn8iSXcvo2r7DB";
         TwitterAuthConfig authConfig =  new TwitterAuthConfig(consumerKey, consumerSecret);
         Fabric.with(this, new TwitterCore(authConfig), new TweetUi());
+
+        buildGoogleApiClient();
 
     }
 
@@ -151,8 +151,31 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         else{
             mGoogleApiClient.connect();
 
-            AlarmService alarmService = new AlarmService(getBaseContext());
-            alarmService.startAlarm();
+//            AlarmService alarmService = new AlarmService(getBaseContext());
+//            alarmService.startAlarm();
+
+//            pDialog = new ProgressDialog(MainActivity.this);
+//            pDialog.setMessage("Attempting to update...");
+//            pDialog.setIndeterminate(false);
+//            pDialog.setCancelable(true);
+//            pDialog.show();
+//            Double latitude = Double.parseDouble(sharedPreferences.getString(AlarmReceiver.TAG_CURRENT_LATITUDE, "0"));
+//            Double longitude = Double.parseDouble(sharedPreferences.getString(AlarmReceiver.TAG_CURRENT_LONGITUDE, "0"));
+//            Address currAddr = LocationUtils.getAddress(this,latitude, longitude);
+//            if (currAddr != null) {
+//
+//                location = String.valueOf(mLastLocation.getLatitude());
+////            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
+////            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+//                Log.d("ADDR", currAddr.getLocality());
+//
+//                TextView locationText = (TextView) findViewById(R.id.location_in_main);
+//                locationText.setText(currAddr.getLocality() + ", " + currAddr.getAdminArea());
+//
+//                new GetTweets().execute();
+//            }else{
+//                Toast.makeText(getApplicationContext(), "TWe failed to find your connection :( ", Toast.LENGTH_LONG).show();
+//            }
         }
 
 //        expListView = (AnimatedExpandableListView) findViewById(R.id.lvExp);
@@ -184,32 +207,40 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
     @Override
     public void onConnected(Bundle connectionHint){
+        Address currAddr =  null;
         pDialog = new ProgressDialog(MainActivity.this);
         pDialog.setMessage("Attempting to update...");
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(true);
         pDialog.show();
-        Address currAddr =  null;
+        sharedPreferences = getSharedPreferences(StringUtils.MYPREFERENCES, Context.MODE_PRIVATE);
+
         while(currAddr == null && mLastLocation == null){
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                     mGoogleApiClient);
             if(mLastLocation != null){
+                Log.d("CurrAddr", "From onConnected in MainActivity is not null");
                 currAddr = LocationUtils.getAddress(this,mLastLocation.getLatitude(), mLastLocation.getLongitude());
             }
         }
         if (currAddr != null) {
+            System.out.println("About to add locations to shared preferences in MainActivity");
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(AlarmReceiver.TAG_CURRENT_LATITUDE, currAddr.getLatitude() + "");
+            editor.putString(AlarmReceiver.TAG_CURRENT_LONGITUDE, currAddr.getLongitude() + "");
+            editor.commit();
+            System.out.println("Added locations to shared preferences in MainActivity");
 
+            AlarmService alarmService = new AlarmService(getBaseContext());
+            alarmService.startAlarm();
             location = String.valueOf(mLastLocation.getLatitude());
 //            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-//            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+
             Log.d("ADDR", currAddr.getLocality());
 
             TextView locationText = (TextView) findViewById(R.id.location_in_main);
             locationText.setText(currAddr.getLocality() + ", " + currAddr.getAdminArea());
 
-            tweetAdapter =
-                    new TweetViewFetchAdapter<CompactTweetView>(
-                            MainActivity.this);
             new GetTweets().execute();
         }
     }
@@ -519,6 +550,7 @@ public boolean onOptionsItemSelected(MenuItem item) {
         protected void onPreExecute(){
             super.onPreExecute();
             if(pDialog == null){
+                Log.d("pDialog is null", "from GetTweets in MainActivity");
                 pDialog = new ProgressDialog(MainActivity.this);
                 pDialog.setMessage("Attempting to update...");
                 pDialog.setIndeterminate(false);
@@ -569,123 +601,37 @@ public boolean onOptionsItemSelected(MenuItem item) {
 
                     }
 
-
+                    if(tweetAdapter == null){
+                        tweetAdapter =
+                                new TweetViewFetchAdapter<CompactTweetView>(
+                                        MainActivity.this);
+                    }
                     tweetAdapter.setTweetIds(tweetIDS,
                             new LoadCallback<List<Tweet>>() {
                                 @Override
                                 public void success(List<Tweet> tweets) {
                                     // my custom actions
                                     setListAdapter(tweetAdapter);
+                                    if(pDialog != null){
+                                        pDialog.dismiss();
+                                    }
                                 }
 
                                 @Override
                                 public void failure(TwitterException exception) {
                                     Toast.makeText(getApplicationContext(), "Twitter failed to  update :( ", Toast.LENGTH_LONG).show();
+                                    if(pDialog != null){
+                                        pDialog.dismiss();
+                                    }
                                 }
                             });
                 }
-                pDialog.dismiss();
+
+
             }
             catch(Exception e){
                 e.printStackTrace();
             }
         }
     }
-
-//    private class DisplayInfo extends AsyncTask<String, String, String>{
-//        private static final String IMPACTS_URL = "http://ec2-54-149-172-15.us-west-2.compute.amazonaws.com/grabImpacts.php";
-//        JSONObject jsonObject;
-//
-//        @Override
-//        protected void onPreExecute(){
-//            super.onPreExecute();
-//            pDialog = new ProgressDialog(MainActivity.this);
-//            pDialog.setMessage("Attempting to update...");
-//            pDialog.setIndeterminate(false);
-//            pDialog.setCancelable(true);
-//            pDialog.show();
-//        }
-//
-//        @Override
-//        protected String doInBackground(String... urls){
-//            // Check for success tag
-//            int success;
-//            try{
-////                Log.d("Impact and Fact Request", "Starting");
-//                jsonObject = jsonParser.getJSONFromURL(IMPACTS_URL);
-////                Log.d("Checking result:", jsonObject.toString());
-//
-//            } catch(Exception e){
-//                e.printStackTrace();
-//            }
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String someString){
-//            try {
-//                Handler handler = new Handler();
-//                handler.postDelayed(new Runnable() {
-//                    public void run() {
-//                        pDialog.dismiss();
-//                    }}, 1000);  // 1000 milliseconds
-//                if(jsonObject == null){
-//                    System.out.println("jsonObject is null");
-//                }
-//                if(jsonObject != null && !jsonObject.toString().isEmpty()){
-//                    products = jsonObject.getJSONArray("Drought");
-//                    // groups will be impact, facts, restrictions (these are the headers)
-//                    // in each group, what we grab from json is what we will display
-//
-//                    for(int i = 0; i < products.length(); i++){
-//                        JSONObject object = products.getJSONObject(i);
-//
-//                        String id = object.getString(TAG_ID);
-//                        String impact = object.getString(TAG_IMPACT);
-//                        String link = object.getString(TAG_LINK);
-//                        String fact = object.getString(TAG_FACT);
-//
-//                        SharedPreferences.Editor editor = getSharedPreferences(StringUtils.MYPREFERENCES, Context.MODE_PRIVATE).edit();
-//                        editor.putString(alreadyUpdated, "already Updated");
-//
-//                        if(!StringUtils.stringIsEmpty(impact)){
-//                            System.out.println("Impact: " + impact);
-////                            listDataHeader.add(im);
-////                            impacts.add(impact);
-////                            listDataChild.put(im, impacts);
-//                            GroupItem groupItem = new GroupItem(IMPACT_TITLE);
-//                            List<ChildItem> items = new ArrayList<ChildItem>();
-//                            items.add(new ChildItem(impact));
-//
-//                            groupItem.setChildren(items);
-//                            groupItems.add(groupItem);
-//
-//                            editor.putString(TAG_IMPACT, impact);
-//
-//                        }
-//
-//                        if(!StringUtils.stringIsEmpty(fact)){
-//                            System.out.println("Fact: " + fact);
-////                            listDataHeader.add(TAG_FACT);
-////                            facts.add(fact);
-////                            listDataChild.put(TAG_FACT, facts);
-//                            GroupItem groupItem = new GroupItem(FACT_TITLE);
-//                            List<ChildItem> items = new ArrayList<ChildItem>();
-//                            items.add(new ChildItem(fact));
-//                            groupItem.setChildren(items);
-//                            groupItems.add(groupItem);
-//
-//                            editor.putString(TAG_FACT, fact);
-//                        }
-//                        editor.commit();
-//                    }
-//
-//                    setExpandableListAdapter();
-//                }
-//            }
-//            catch(Exception e){
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 }

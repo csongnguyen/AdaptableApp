@@ -13,12 +13,14 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -84,17 +86,38 @@ public class DisplayDisastersActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_display_disasters);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+//        actionbar.setHomeAsUpIndicator(R.drawable.home_icon2);
+        actionbar.setDisplayShowTitleEnabled(true);
+
+//        actionbar.setDisplayShowHomeEnabled(true);
+//        actionbar.setHomeButtonEnabled(true);
+//        actionbar.setHomeButtonEnabled(true);
+//        actionbar.setIcon(R.drawable.settings_menu);
+//        actionbar.setDisplayUseLogoEnabled(true);
+
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFF5BA4F3));//0xFF4697b5
 
-        getSupportActionBar().setDisplayOptions(android.support.v7.app.ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.actionbar);
-        TextView tView = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.actionbarTitle);
-        tView.setText("Disasters");
+
+//        getSupportActionBar().setDisplayOptions(android.support.v7.app.ActionBar.DISPLAY_SHOW_CUSTOM);
+//        getSupportActionBar().setCustomView(R.layout.actionbar);
+//        TextView tView = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.actionbarTitle);
+//        tView.setText("Disasters");
 
 //        Log.d("ON_CREATE", "true  in DisplayDisastersActivity");
 
+    }
+
+    @Override
+    public boolean onSupportNavigateUp(){
+        Intent homeIntent = new Intent(this, MainActivity.class);
+        homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(homeIntent);
+//        finish();
+        return true;
     }
 
     public boolean isNetworkAvailable() {
@@ -108,7 +131,8 @@ public class DisplayDisastersActivity extends ActionBarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
 //        super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
-            goToDisasterNumber = data.getIntExtra(MyLaunchpadSectionFragment.ARG_DISASTER_NUMBER, 0);
+            goToDisasterNumber = data.getIntExtra(StringUtils.ARG_DISASTER_NUMBER, 0);
+//            new DisplayInfo().execute();
 //            System.out.println("Passing int goToDisasterNumber to DisplayDisastersActivity from onActivityResult: " + goToDisasterNumber);
         }
     }
@@ -120,11 +144,9 @@ public class DisplayDisastersActivity extends ActionBarActivity {
         if (!isNetworkAvailable()) {
             return;
         }
-//        Log.d("ON_START", "true  in DisplayDisastersActivity");
+        Log.d("ON_START", "true  in DisplayDisastersActivity");
         sharedPreferences = getSharedPreferences(StringUtils.MYPREFERENCES, Context.MODE_PRIVATE);
         new DisplayInfo().execute();
-
-
     }
 
     private ExpandableListAdapter setAdapter(List<GroupItem> gItems, int percentRisk){
@@ -151,7 +173,6 @@ public class DisplayDisastersActivity extends ActionBarActivity {
             this.sp = sp;
         }
 
-
         @Override
         public MyLaunchpadSectionFragment getItem(int i) {
 
@@ -159,20 +180,29 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                 MyLaunchpadSectionFragment fragment = new MyLaunchpadSectionFragment();
                 Bundle args = new Bundle();
 
-                int totalCompleted = 0;
                 List<Integer> checklistStatus = checklistStatuses.get(i);
-                for(int index = 0; index < checklistStatus.size();index++){
-                    totalCompleted += checklistStatus.get(index);
-                }
-                int drought_condition = sharedPreferences.getInt(AlarmReceiver.TAG_NEW_DROUGHT_CONDITION, 0);
-                String city = sharedPreferences.getString(AlarmReceiver.TAG_CITY, "Cupertino");
+                int totalCompleted = sp.getInt(StringUtils.CHECKLIST_COMPLETED, -1);
+                int total = sp.getInt(StringUtils.CHECKLIST_TOTAL, -1);
+//                if(totalCompleted == -1){
+
+                    totalCompleted = 0;
+                    for(int index = 0; index < checklistStatus.size();index++){
+                        totalCompleted += checklistStatus.get(index);
+                    }
+//                }
+//                if(total == -1){
+                    total = checklistStatus.size();
+//                }
+
+                int drought_condition = sp.getInt(AlarmReceiver.TAG_NEW_DROUGHT_CONDITION, 0);
+                String city = sp.getString(AlarmReceiver.TAG_CITY, "Cupertino");
 
 
-                args.putString(MyLaunchpadSectionFragment.ARG_DISASTER, StringUtils.disasterTypes[i]);
-                args.putInt(MyLaunchpadSectionFragment.ARG_DISASTER_NUMBER, i);
-                args.putInt(MyLaunchpadSectionFragment.ARG_TOTAL_DISASTERS, getCount());
-                args.putInt(MyLaunchpadSectionFragment.CHECKLIST_COMPLETED, totalCompleted);
-                args.putInt(MyLaunchpadSectionFragment.CHECKLIST_TOTAL, checklistStatus.size());
+                args.putString(StringUtils.ARG_DISASTER, StringUtils.disasterTypes[i]);
+                args.putInt(StringUtils.ARG_DISASTER_NUMBER, i);
+                args.putInt(StringUtils.ARG_TOTAL_DISASTERS, getCount());
+                args.putInt(StringUtils.CHECKLIST_COMPLETED, totalCompleted);
+                args.putInt(StringUtils.CHECKLIST_TOTAL,total );
                 args.putInt(MyLaunchpadSectionFragment.ARG_DROUGHT_PERCENT, expAdapters.get(0).getPercentRisk());
                 args.putInt(MyLaunchpadSectionFragment.ARG_DROUGHT_COND, drought_condition);
                 args.putString(MyLaunchpadSectionFragment.ARG_CITY, city);
@@ -180,6 +210,7 @@ public class DisplayDisastersActivity extends ActionBarActivity {
 
 
                 fragment.setArguments(args);
+                fragment.setSharedPreferences(sp);
                 if(i < 2){
                     fragment.setAdapter1(expAdapters.get(i));
                 }else{
@@ -211,20 +242,27 @@ public class DisplayDisastersActivity extends ActionBarActivity {
      * A fragment that launches other parts of the demo application.
      */
     public static class MyLaunchpadSectionFragment extends Fragment {
-        public static final String CHECKLIST_COMPLETED = "checklist_completed";
-        public static final String CHECKLIST_TOTAL = "checklist_total";
-        public static final String ARG_DISASTER = "disaster_type";
-        public static final String ARG_DISASTER_NUMBER = "disaster_number";
-        public static final String ARG_TOTAL_DISASTERS = "total";
+//        public static final String CHECKLIST_COMPLETED = "checklist_completed";
+//        public static final String CHECKLIST_TOTAL = "checklist_total";
+//        public static final String ARG_DISASTER = "disaster_type";
+//        public static final String ARG_DISASTER_NUMBER = "disaster_number";
+//        public static final String ARG_TOTAL_DISASTERS = "total";
         public static final String ARG_DROUGHT_PERCENT = "drought_percent";
         public static final String ARG_DROUGHT_COND = "drought_condition";
         public static final String ARG_CITY = "city";
         public ImageView lArrow, rArrow;
+        private View rootView;
+        SharedPreferences sp;
 
         ExpandableListAdapter adapt1, adapt2;
 
         public void setAdapter1(ExpandableListAdapter a){
             adapt1 = a;
+        }
+
+        public void setSharedPreferences(SharedPreferences sp){
+            this.sp = sp;
+
         }
 
 //        public void setAdapter2(ExpandableListAdapter a){
@@ -234,20 +272,21 @@ public class DisplayDisastersActivity extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_display_disasters, container, false);
+            rootView = inflater.inflate(R.layout.fragment_display_disasters, container, false);
             rootView.setVisibility(View.VISIBLE);
             System.out.println("Creating view of fragment");
             final Bundle args = getArguments();
+
             ((TextView) rootView.findViewById(R.id.disasterTitle)).setText(
-                    args.getString(ARG_DISASTER));
+                    args.getString(StringUtils.ARG_DISASTER));
 
             ((TextView) rootView.findViewById(R.id.disasterPageNumber)).setText(
-                    (args.getInt(ARG_DISASTER_NUMBER) + 1) + " of " + args.getInt(ARG_TOTAL_DISASTERS));
+                    (args.getInt(StringUtils.ARG_DISASTER_NUMBER) + 1) + " of " + args.getInt(StringUtils.ARG_TOTAL_DISASTERS));
 
 
             TextView riskStatus = (TextView) rootView.findViewById(R.id.my_risk_status_text);
             String city = args.getString(ARG_CITY);
-            switch(args.getString(ARG_DISASTER)){
+            switch(args.getString(StringUtils.ARG_DISASTER)){
                 case "Drought":
                     int drought_percent = args.getInt(ARG_DROUGHT_PERCENT);
                     int drought_condition = args.getInt(ARG_DROUGHT_COND);
@@ -268,10 +307,14 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                     riskStatus.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Uri uri = Uri.parse("http://www.redtreesoft.com/google/");
-                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+//                            Uri uri = Uri.parse("http://www.redtreesoft.com/google/");
+//                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+//                            startActivity(intent);
+                            DisplayDisastersActivity.goToDisasterNumber = args.getInt(StringUtils.ARG_DISASTER_NUMBER);
+                            Intent intent = new Intent(getActivity(), WebViewActivity.class);
+                            intent.putExtra(StringUtils.WEB_VIEW, "http://www.redtreesoft.com/google/");
                             startActivity(intent);
-                            DisplayDisastersActivity.goToDisasterNumber = args.getInt(ARG_DISASTER_NUMBER);
+
                         }
                     });
 //                    riskStatus.setText(Html.fromHtml("<a style='text-decoration:none; color: rgb(0,0,0);' href=''>How far are you from a fault zone?</a>"));
@@ -302,10 +345,12 @@ public class DisplayDisastersActivity extends ActionBarActivity {
 
             ImageView leftArrow = (ImageView) rootView.findViewById(R.id.riskscreen_left);
             ImageView rightArrow = (ImageView) rootView.findViewById(R.id.riskscreen_right);
-            if(args.getInt(ARG_DISASTER_NUMBER) == 0 ){
+            if(args.getInt(StringUtils.ARG_DISASTER_NUMBER) == 0 ){
                 leftArrow.setVisibility(View.GONE);
+            }else{
+                System.out.println("Setting leftArrow Image "+ leftArrow.getAlpha() + " for " + args.getString(StringUtils.ARG_DISASTER));
             }
-            if(args.getInt(ARG_DISASTER_NUMBER) == args.getInt(ARG_TOTAL_DISASTERS)){
+            if(args.getInt(StringUtils.ARG_DISASTER_NUMBER) == args.getInt(StringUtils.ARG_TOTAL_DISASTERS) - 1){
                 rightArrow.setVisibility(View.GONE);
             }
 
@@ -316,15 +361,24 @@ public class DisplayDisastersActivity extends ActionBarActivity {
             checklistPreview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                        Log.d("Passing disaster #", " to checklist " + args.getInt(ARG_DISASTER_NUMBER));
+                        v.startAnimation(AnimationUtils.loadAnimation(v.getContext(), R.anim.image_anim));
+                        Log.d("Passing disaster #", " to checklist " + args.getInt(StringUtils.ARG_DISASTER_NUMBER));
                         Intent intent = new Intent(v.getContext(), DisplayChecklistActivityWithFragment.class);
-                        intent.putExtra(ARG_DISASTER_NUMBER, args.getInt(ARG_DISASTER_NUMBER));
+                        intent.putExtra(StringUtils.ARG_DISASTER_NUMBER, args.getInt(StringUtils.ARG_DISASTER_NUMBER));
                         startActivityForResult(intent, 1);
 //                        startActivity(intent);
                 }
             });
             TextView checklistPercent = (TextView)rootView.findViewById(R.id.checklist_percent_disaster);
-            checklistPercent.setText(Html.fromHtml("<b>" + (int)(100*((double)args.getInt(CHECKLIST_COMPLETED)/args.getInt(CHECKLIST_TOTAL))) + "%<b>"));
+
+            int totalCompleted = sp.getInt(StringUtils.CHECKLIST_COMPLETED + args.getInt(StringUtils.ARG_DISASTER_NUMBER), -1);
+            int total = sp.getInt(StringUtils.CHECKLIST_TOTAL + args.getInt(StringUtils.ARG_DISASTER_NUMBER), -1);
+            if(total == -1 || totalCompleted == -1){
+                checklistPercent.setText(Html.fromHtml("<b>" + (int)(100*((double)args.getInt(StringUtils.CHECKLIST_COMPLETED)/args.getInt(StringUtils.CHECKLIST_TOTAL))) + "%<b>"));
+            }else{
+                checklistPercent.setText(Html.fromHtml("<b>" + (int)(100*((double)totalCompleted/total)) + "%<b>"));
+            }
+
 
 //            CustomGauge gauge = (CustomGauge) rootView.findViewById(R.id.gaugeForRisk);
 //            gauge.setValue(args.getInt(ARG_DROUGHT_PERCENT));
@@ -419,7 +473,16 @@ public class DisplayDisastersActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+//        Log.d("id-type", "onOptionsItemSelected in Display " + id);
 
+//        if(id == android.R.id.icon){
+//            System.out.println("THIS IS AN ICON PRESSED ONOPTIONSITEMSELECTED IN DISPLAYDISASTERS");
+//        }
+//        if(id == android.R.id.home){
+//                Intent homeIntent = new Intent(this, MainActivity.class);
+//                homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                startActivity(homeIntent);
+//        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             // Set the text view as the activity layout
@@ -506,11 +569,8 @@ public class DisplayDisastersActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(String someString){
             try {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    public void run() {
-                        pDialog.dismiss();
-                    }}, 1000);  // 1000 milliseconds
+                pDialog.dismiss();
+
                 // check checklist
                 myLists = new ArrayList<List<Integer>>();
                 List<Integer> mylist;
@@ -588,10 +648,6 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                             String link = object.getString(TAG_LINK);
 
                             if(!StringUtils.stringIsEmpty(impact)){
-//                                System.out.println("Impact: " + impact);
-//                            listDataHeader.add(im);
-//                            impacts.add(impact);
-//                            listDataChild.put(im, impacts);
                                  groupItem = new GroupItem(impactTitle);
                                 groupItem.setHeadLabel("IMPACT");
                                 groupItem.setSubheader("Source: " + source);
@@ -606,11 +662,6 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                             }
 
                             if(!StringUtils.stringIsEmpty(fact)){
-//                                System.out.println("Fact: " + fact);
-//                                groupItems = new ArrayList<GroupItem>();
-//                            listDataHeader.add(TAG_FACT);
-//                            facts.add(fact);
-//                            listDataChild.put(TAG_FACT, facts);
                                  groupItem = new GroupItem(fact);
                                 groupItem.setHeadLabel("FACT");
                                 groupItem.setSubheader("Source: " + source);
@@ -620,7 +671,7 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                                 groupItems.add(groupItem);
 
                                 editor.putString(TAG_FACT, fact);
-//                                factAdapters.add(setAdapter(groupItems));
+
                             }
                         }
                         impactAdapters.add(setAdapter(groupItems, (int)drought_percent));
@@ -631,6 +682,47 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                     mViewPager = (ViewPager) findViewById(R.id.pager_disasters);
                     mViewPager.setAdapter(mAppSectionsPagerAdapter);
                     mViewPager.setCurrentItem(goToDisasterNumber);
+
+                    System.out.println("Setting on page change listener for DisplayDisasterActivity...");
+                    mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                        @Override
+                        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                            goToDisasterNumber = mViewPager.getCurrentItem();
+                            if(mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).rArrow == null){
+                                System.out.println("Apparently the right arrow is null for "+ mViewPager.getCurrentItem());
+                            }
+                            if(mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).rArrow != null){
+                                Log.d("onPageScrolled", "DisplayDisastersActivity now on page " + mViewPager.getCurrentItem());
+                                mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).rArrow.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        if(mViewPager.getCurrentItem() < (mAppSectionsPagerAdapter.getCount()-1)){
+                                            mViewPager.setCurrentItem(mViewPager.getCurrentItem()+1);
+                                        }
+                                    }
+                                });
+                            }
+                            if(mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).lArrow != null){
+                                mAppSectionsPagerAdapter.getItem(mViewPager.getCurrentItem()).lArrow.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        if(mViewPager.getCurrentItem() > 0){
+                                            mViewPager.setCurrentItem(mViewPager.getCurrentItem()-1);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onPageSelected(int position) {
+                        }
+
+                        @Override
+                        public void onPageScrollStateChanged(int state) {
+                        }
+                    });
                 }
             }
             catch(Exception e){

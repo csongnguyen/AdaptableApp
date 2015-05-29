@@ -11,7 +11,7 @@
 
     <ImageView
         android:id="@+id/user_profile_picture"
-        android:src="@drawable/user_profile_default"
+        android:src="@drawable/profile_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginTop="50dp"
@@ -31,7 +31,7 @@
         xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
         my_namespace:typeface="Roboto-Medium.ttf"
         android:id="@+id/user_first_name"
-        android:text="Christina"
+        android:text="Jane"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20dp"
@@ -45,7 +45,7 @@
         xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
         my_namespace:typeface="Roboto-Medium.ttf"
         android:id="@+id/user_last_name"
-        android:text="Zapata"
+        android:text="Doe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20dp"
@@ -119,13 +119,13 @@
             android:orientation="vertical">
 
             <ImageView
-                android:src="@drawable/user_profile_default_green"
+                android:src="@drawable/profile_image_1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.8"
             />
             <TextView
-                android:text="Connie N."
+                android:text="Mike"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"/>
@@ -139,13 +139,13 @@
             android:orientation="vertical">
 
             <ImageView
-                android:src="@drawable/user_profile_default_violet"
+                android:src="@drawable/profile_image_2"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.8"
                 />
             <TextView
-                android:text="Gary T."
+                android:text="Wendy C."
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"/>
@@ -159,13 +159,13 @@
             android:orientation="vertical">
 
             <ImageView
-                android:src="@drawable/user_profile_default"
+                android:src="@drawable/profile_image_3"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.8"
                 />
             <TextView
-                android:text="Jessica P."
+                android:text="Charlie"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"/>
@@ -202,7 +202,9 @@
             android:layout_weight="0.5"
             android:orientation="vertical"
             android:background="@color/Khaki"
+
             >
+            <!--"@color/Khaki"-->
             <!--android:layout_toLeftOf="@id/countryWheelPicker"-->
             <TextView
                 android:id="@+id/checklistPercent"

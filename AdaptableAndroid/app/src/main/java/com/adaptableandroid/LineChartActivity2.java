@@ -69,8 +69,6 @@ public class LineChartActivity2 extends ActionBarActivity implements OnSeekBarCh
     private LineChart mChart;
     List<List<Task>> myLists;
     int wheelIndexStart = 1;
-//    private SeekBar mSeekBarX, mSeekBarY;
-//    private TextView tvX, tvY;
     private boolean scrolling = false; // Scrolling flag
     private Activity activity = this;
 
@@ -82,15 +80,14 @@ public class LineChartActivity2 extends ActionBarActivity implements OnSeekBarCh
         setContentView(R.layout.activity_linechart);
 
         ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
-        actionbar.setDisplayUseLogoEnabled(true);
-        actionbar.setDisplayShowHomeEnabled(true);
         actionbar.setBackgroundDrawable(new ColorDrawable(0xFF5BA4F3));//0xFF4697b5
 
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.actionbar);
-        TextView tView = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.actionbarTitle);
-        tView.setText("Adaptable");
+//        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+//        getSupportActionBar().setCustomView(R.layout.actionbar);
+//        TextView tView = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.actionbarTitle);
+//        tView.setText("Adaptable");
 
         /***** USER PROFILES ON CLICK *******/
         LinearLayout facebook_users_layout = (LinearLayout) findViewById(R.id.facebook_users_layout);
@@ -144,22 +141,12 @@ public class LineChartActivity2 extends ActionBarActivity implements OnSeekBarCh
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), DisplayChecklistActivityWithFragment.class);
-                intent.putExtra(DisplayDisastersActivity.MyLaunchpadSectionFragment.ARG_DISASTER_NUMBER, disasterWheel.getCurrentItem());
-                startActivity(intent);
+                intent.putExtra(StringUtils.ARG_DISASTER_NUMBER, disasterWheel.getCurrentItem());
+                startActivityForResult(intent, 1);
             }
         });
         /******************************************************************************/
 
-//        tvX = (TextView) findViewById(R.id.tvXMax);
-//        tvY = (TextView) findViewById(R.id.tvYMax);
-//        mSeekBarX = (SeekBar) findViewById(R.id.seekBar1);
-//        mSeekBarY = (SeekBar) findViewById(R.id.seekBar2);
-//
-//        mSeekBarX.setProgress(45);
-//        mSeekBarY.setProgress(100);
-//
-//        mSeekBarY.setOnSeekBarChangeListener(this);
-//        mSeekBarX.setOnSeekBarChangeListener(this);
 
         mChart = (LineChart) findViewById(R.id.lineChart1);
         mChart.setOnChartValueSelectedListener(this);
@@ -237,6 +224,18 @@ public class LineChartActivity2 extends ActionBarActivity implements OnSeekBarCh
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+//        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            wheelIndexStart= data.getIntExtra(StringUtils.ARG_DISASTER_NUMBER, 0);
+            WheelView disasterWheel = (WheelView) findViewById(R.id.disasterWheelPicker);
+            disasterWheel.setCurrentItem(wheelIndexStart);
+            new DisplayChecklistPercent().execute();
+
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_without_profile, menu);
         return true;
@@ -248,9 +247,13 @@ public class LineChartActivity2 extends ActionBarActivity implements OnSeekBarCh
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        if(id == android.R.id.home){
+            Intent homeIntent = new Intent(this, MainActivity.class);
+            homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(homeIntent);
+        }
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        else if (id == R.id.action_settings) {
             // Set the text view as the activity layout
             try{
 //            Log.d("SETTINGS", "Trying to inflate settings");
@@ -460,13 +463,11 @@ public class LineChartActivity2 extends ActionBarActivity implements OnSeekBarCh
         @Override
         public int getItemsCount() {
             return disasters.length;
-//            return countries.length;
         }
 
         @Override
         protected CharSequence getItemText(int index) {
             return disasters[index];
-//            return countries[index];
         }
     }
 
@@ -479,7 +480,6 @@ public class LineChartActivity2 extends ActionBarActivity implements OnSeekBarCh
         }
         return total;
     }
-
 
     private class DisplayChecklistPercent extends AsyncTask<String, String, String> {
         private static final String POPULATE_CHECKLIST_URL = "http://ec2-54-149-172-15.us-west-2.compute.amazonaws.com/getChecklist.php";
@@ -519,14 +519,10 @@ public class LineChartActivity2 extends ActionBarActivity implements OnSeekBarCh
         @Override
         protected void onPostExecute(String someString){
             try {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    public void run() {
-                        pDialog.dismiss();
-                    }}, 300);  // 1000 milliseconds
-//                List<MyAdapter> myAdapters = new ArrayList<MyAdapter>();
+                pDialog.dismiss();
                 myLists = new ArrayList<List<Task>>();
                 List<Task> mylist;
+
                 for(int a = 0; a < jsonObjects.length; a++){
                     JSONObject jsonObject = jsonObjects[a];
                     if(!jsonObject.toString().isEmpty()){

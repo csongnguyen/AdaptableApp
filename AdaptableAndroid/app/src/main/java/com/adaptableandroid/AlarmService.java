@@ -34,6 +34,7 @@ public class AlarmService {
 //        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 6000, mAlarmSender);
         am.set(AlarmManager.RTC_WAKEUP,firstTime, mAlarmSender);
         System.out.println("alarm is NOT set on repeat right now");
+
     }
 
 
