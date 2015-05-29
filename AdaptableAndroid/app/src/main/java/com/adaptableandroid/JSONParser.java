@@ -61,7 +61,7 @@ public class JSONParser {
             HttpResponse httpResponse = httpClient.execute(httpPost);
             HttpEntity httpEntity = httpResponse.getEntity();
             is = httpEntity.getContent();
-            Log.d("Got HTTP Request", "Success! It is: " + httpPost.getURI());
+//            Log.d("Got HTTP Request", "Success! It is: " + httpPost.getURI());
         }catch(UnsupportedEncodingException e){
             e.printStackTrace();
         } catch(ClientProtocolException e){
@@ -79,16 +79,16 @@ public class JSONParser {
             }
             is.close();
             json = sb.toString();
-            Log.d("Grabbed the json result", "Success!");
+//            Log.d("Grabbed the json result", "Success!");
         } catch(Exception e){
             Log.e("Buffer Error", "Error converting result " + e.toString());
         }
 
         // try to parse the string to a JSON object
         try{
-            System.out.println("Printing JSONObject string= " + json);
+//            System.out.println("Printing JSONObject string= " + json);
             jsonObject = new JSONObject(json);
-            Log.d("Returning json result", "Success!");
+//            Log.d("Returning json result", "Success!");
         } catch(JSONException e){
             Log.e("JSON Parser", "Error parsing data " + e.toString());
         }
@@ -102,23 +102,17 @@ public class JSONParser {
         try{
             DefaultHttpClient httpClient = new DefaultHttpClient();
             httpPost = new HttpPost(url);
-            System.out.println("Paramtype is null: " + StringUtils.stringIsEmpty(paramType) + ", Parameter is null: " + StringUtils.stringIsEmpty(parameter));
+//            System.out.println("Paramtype is null: " + StringUtils.stringIsEmpty(paramType) + ", Parameter is null: " + StringUtils.stringIsEmpty(parameter));
             if(!StringUtils.stringIsEmpty(paramType) && !StringUtils.stringIsEmpty(parameter)){
                 String newURL = url+ "?" + paramType + "=" + parameter;
-                System.out.println("Grabbing url " + newURL);
+//                System.out.println("Grabbing url " + newURL);
                 httpPost = new HttpPost(newURL);
-
-
-                // I think this example is for posting
-//                List<NameValuePair> pars = new ArrayList<NameValuePair>();
-//                pars.add(new BasicNameValuePair(paramType, parameter));
-//                httpPost.setEntity(new UrlEncodedFormEntity(pars));
             }
 
             HttpResponse httpResponse = httpClient.execute(httpPost);
             HttpEntity httpEntity = httpResponse.getEntity();
             is = httpEntity.getContent();
-            Log.d("Got HTTP Request", "Success! It is: " + httpPost.getURI());
+//            Log.d("Got HTTP Request", "Success! It is: " + httpPost.getURI());
         }catch(UnsupportedEncodingException e){
             e.printStackTrace();
         } catch(ClientProtocolException e){
@@ -136,7 +130,7 @@ public class JSONParser {
             }
             is.close();
             json = sb.toString();
-            Log.d("Grabbed the json result", "Success!");
+//            Log.d("Grabbed the json result", "Success!");
         } catch(Exception e){
             Log.e("Buffer Error", "Error converting result " + e.toString());
         }
@@ -144,7 +138,7 @@ public class JSONParser {
         // try to parse the string to a JSON object
         try{
             jsonObject = new JSONObject(json);
-            Log.d("Returning json result", "Success!");
+//            Log.d("Returning json result", "Success!");
         } catch(JSONException e){
             Log.e("JSON Parser", "Error parsing data " + e.toString());
             jsonObject = null;

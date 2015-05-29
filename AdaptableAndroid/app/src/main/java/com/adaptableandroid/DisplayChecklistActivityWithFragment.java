@@ -52,13 +52,14 @@ import java.util.Set;
 /**
  * Created by Connie on 5/18/2015.
  */
-public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
+public class DisplayChecklistActivityWithFragment extends ActionBarActivity {
     List<Task> mylist;
     PopupWindow pw;
     JSONParser jsonParser = new JSONParser();
     ProgressDialog pDialog;
     MyAppSectionsPagerAdapter mAppSectionsPagerAdapter;
     ViewPager mViewPager;
+    int goToDisasterNumber;
 
     CheckBox checkBoxToBeUpdated;
 
@@ -72,7 +73,8 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        goToDisasterNumber = intent.getIntExtra(DisplayDisastersActivity.MyLaunchpadSectionFragment.ARG_DISASTER_NUMBER, 0);
+        Log.d("got disaster #", "From displaychecklistActivity " + goToDisasterNumber);
         setContentView(R.layout.activity_display_checklists);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -85,7 +87,19 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed();
 
+        Intent intent = new Intent();
+        intent.putExtra(MyLaunchpadSectionFragment.ARG_DISASTER_NUMBER, goToDisasterNumber);
+        setResult(RESULT_OK, intent);
+        System.out.println("Passing in goToDisasterNumber from DisplayChecklistActivity " + goToDisasterNumber);
+
+        finish();
+
+//        super.onBackPressed();
+    }
 
     private void addToMyList(String shortName, String longName, String status){//}, String id){
         mylist.add(new Task(shortName, longName, Integer.parseInt(status)));//, Integer.parseInt(id)));
@@ -110,7 +124,7 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main_activity, menu);
+        getMenuInflater().inflate(R.menu.menu_main_without_profile, menu);
         super.onCreateOptionsMenu(menu);
         return true;
     }
@@ -122,17 +136,8 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if(id == R.id.action_profile){
-            try{
-                Intent intent = new Intent(this, LineChartActivity2.class);
-                startActivity(intent);
-
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }
         //noinspection SimplifiableIfStatement
-        else if (id == R.id.action_settings) {
+        if (id == R.id.action_settings) {
             // Set the text view as the activity layout
             try{
                 // We need to get the instance of the LayoutInflater, use the context of this activity
@@ -256,7 +261,7 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
                 MyLaunchpadSectionFragment fragment = new MyLaunchpadSectionFragment();
                 Bundle args = new Bundle();
                 args.putString(MyLaunchpadSectionFragment.ARG_DISASTER, StringUtils.disasterTypes[i]);
-                args.putInt(MyLaunchpadSectionFragment.ARG_DISASTER_NUMBER, i + 1);
+                args.putInt(MyLaunchpadSectionFragment.ARG_DISASTER_NUMBER, i);
                 args.putInt(MyLaunchpadSectionFragment.ARG_TOTAL_DISASTERS, getCount());
                 fragment.setArguments(args);
                 fragment.setAdapter1(listAdapters.get(i));
@@ -312,6 +317,7 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
             ((TextView) rootView.findViewById(R.id.checklistProgressViewTitle)).setText(
                     args.getString(ARG_DISASTER) + " Preparation");
 
+            Log.d("Checklist background ", args.getString(ARG_DISASTER));
             switch(args.getString(ARG_DISASTER)){
                 case "Drought":
                     rootView.findViewById(R.id.progressBarChecklist).setBackgroundResource(R.drawable.drought_background);
@@ -344,7 +350,7 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
 
             ImageView leftArrow = (ImageView) rootView.findViewById(R.id.riskscreen_left);
             ImageView rightArrow = (ImageView) rootView.findViewById(R.id.riskscreen_right);
-            if(args.getInt(ARG_DISASTER_NUMBER) == 1 ){
+            if(args.getInt(ARG_DISASTER_NUMBER) == 0 ){
                 leftArrow.setVisibility(View.GONE);
             }
             if(args.getInt(ARG_DISASTER_NUMBER) == args.getInt(ARG_TOTAL_DISASTERS)){
@@ -607,6 +613,7 @@ public class DisplayChecklistActivityWithFragment  extends ActionBarActivity {
 
                 mViewPager = (ViewPager) findViewById(R.id.pager_checklists);
                 mViewPager.setAdapter(mAppSectionsPagerAdapter);
+                mViewPager.setCurrentItem(goToDisasterNumber);
 
             }
             catch(Exception e){

@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,13 +20,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
@@ -40,6 +45,7 @@ import com.adaptableandroid.com.adaptableandroid.models.Task;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,11 +59,12 @@ import pl.pawelkleczkowski.customgauge.CustomGauge;
 public class DisplayDisastersActivity extends ActionBarActivity {
     MyAppSectionsPagerAdapter mAppSectionsPagerAdapter;
     ViewPager mViewPager;
+    public static int goToDisasterNumber;
 
     ProgressDialog pDialog;
     JSONParser jsonParser = new JSONParser();
 
-    SharedPreferences sharedPreferences;
+    public SharedPreferences sharedPreferences;
 
     ExpandableListAdapter explistAdapter;
     List<GroupItem> groupItems;
@@ -75,17 +82,18 @@ public class DisplayDisastersActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
-        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+
         setContentView(R.layout.activity_display_disasters);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFF5BA4F3));//0xFF4697b5
 
         getSupportActionBar().setDisplayOptions(android.support.v7.app.ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar);
         TextView tView = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.actionbarTitle);
         tView.setText("Disasters");
-//        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+//        Log.d("ON_CREATE", "true  in DisplayDisastersActivity");
 
     }
 
@@ -97,34 +105,30 @@ public class DisplayDisastersActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+//        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            goToDisasterNumber = data.getIntExtra(MyLaunchpadSectionFragment.ARG_DISASTER_NUMBER, 0);
+//            System.out.println("Passing int goToDisasterNumber to DisplayDisastersActivity from onActivityResult: " + goToDisasterNumber);
+        }
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
 
         if (!isNetworkAvailable()) {
             return;
         }
+//        Log.d("ON_START", "true  in DisplayDisastersActivity");
         sharedPreferences = getSharedPreferences(StringUtils.MYPREFERENCES, Context.MODE_PRIVATE);
-
         new DisplayInfo().execute();
+
+
     }
 
     private ExpandableListAdapter setAdapter(List<GroupItem> gItems, int percentRisk){
-//        //                    explistAdapter = new ExpandableListAdapter(MainActivity.this, listDataHeader, listDataChild);
-//        expListView = (AnimatedExpandableListView) mViewPager.findViewById(R.id.impactList);
-        System.out.println("Setting expandable adapter");
         return new ExpandableListAdapter(DisplayDisastersActivity.this, gItems, "", percentRisk);
-//        mAppSectionsPagerAdapter.setExpandableAdapter(explistAdapter);
-//        mAppSectionsPagerAdapter.getItem(0).setAdapter(explistAdapter);
-//        if(expListView == null){
-//   Log.d("Explistview", "is not NULL");
-//            expListView.setAdapter(explistAdapter);
-
-//        ListView list = mViewPager
-//        ListView list = (ListView) findViewById(R.id.listOfFactualElements);
-//        System.out.println("list.toString()" + list.toString());
-
-//        }
-
     }
 
     /**
@@ -136,13 +140,15 @@ public class DisplayDisastersActivity extends ActionBarActivity {
 //        List <ExpandableListAdapter> impactAdapters, factAdapters;
         List<ExpandableListAdapter> expAdapters;
         List<List<Integer>> checklistStatuses;
+        SharedPreferences sp;
 
-        public MyAppSectionsPagerAdapter(FragmentManager fm, List<ExpandableListAdapter> a1, List<List<Integer>> checklistStatuses) {
+        public MyAppSectionsPagerAdapter(FragmentManager fm, List<ExpandableListAdapter> a1, List<List<Integer>> checklistStatuses, SharedPreferences sp) {
 
             super(fm);
             fragmentMap = new HashMap<Integer, MyLaunchpadSectionFragment>();
             expAdapters = a1;
             this.checklistStatuses = checklistStatuses;
+            this.sp = sp;
         }
 
 
@@ -158,13 +164,20 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                 for(int index = 0; index < checklistStatus.size();index++){
                     totalCompleted += checklistStatus.get(index);
                 }
+                int drought_condition = sharedPreferences.getInt(AlarmReceiver.TAG_NEW_DROUGHT_CONDITION, 0);
+                String city = sharedPreferences.getString(AlarmReceiver.TAG_CITY, "Cupertino");
+
 
                 args.putString(MyLaunchpadSectionFragment.ARG_DISASTER, StringUtils.disasterTypes[i]);
-                args.putInt(MyLaunchpadSectionFragment.ARG_DISASTER_NUMBER, i + 1);
+                args.putInt(MyLaunchpadSectionFragment.ARG_DISASTER_NUMBER, i);
                 args.putInt(MyLaunchpadSectionFragment.ARG_TOTAL_DISASTERS, getCount());
-                args.putInt(MyLaunchpadSectionFragment.ARG_DROUGHT_PERCENT, expAdapters.get(0).getPercentRisk());
                 args.putInt(MyLaunchpadSectionFragment.CHECKLIST_COMPLETED, totalCompleted);
                 args.putInt(MyLaunchpadSectionFragment.CHECKLIST_TOTAL, checklistStatus.size());
+                args.putInt(MyLaunchpadSectionFragment.ARG_DROUGHT_PERCENT, expAdapters.get(0).getPercentRisk());
+                args.putInt(MyLaunchpadSectionFragment.ARG_DROUGHT_COND, drought_condition);
+                args.putString(MyLaunchpadSectionFragment.ARG_CITY, city);
+
+
 
                 fragment.setArguments(args);
                 if(i < 2){
@@ -204,6 +217,8 @@ public class DisplayDisastersActivity extends ActionBarActivity {
         public static final String ARG_DISASTER_NUMBER = "disaster_number";
         public static final String ARG_TOTAL_DISASTERS = "total";
         public static final String ARG_DROUGHT_PERCENT = "drought_percent";
+        public static final String ARG_DROUGHT_COND = "drought_condition";
+        public static final String ARG_CITY = "city";
         public ImageView lArrow, rArrow;
 
         ExpandableListAdapter adapt1, adapt2;
@@ -222,22 +237,53 @@ public class DisplayDisastersActivity extends ActionBarActivity {
             View rootView = inflater.inflate(R.layout.fragment_display_disasters, container, false);
             rootView.setVisibility(View.VISIBLE);
             System.out.println("Creating view of fragment");
-            Bundle args = getArguments();
+            final Bundle args = getArguments();
             ((TextView) rootView.findViewById(R.id.disasterTitle)).setText(
                     args.getString(ARG_DISASTER));
 
             ((TextView) rootView.findViewById(R.id.disasterPageNumber)).setText(
-                    args.getInt(ARG_DISASTER_NUMBER) + " of " + args.getInt(ARG_TOTAL_DISASTERS));
+                    (args.getInt(ARG_DISASTER_NUMBER) + 1) + " of " + args.getInt(ARG_TOTAL_DISASTERS));
 
+
+            TextView riskStatus = (TextView) rootView.findViewById(R.id.my_risk_status_text);
+            String city = args.getString(ARG_CITY);
             switch(args.getString(ARG_DISASTER)){
                 case "Drought":
+                    int drought_percent = args.getInt(ARG_DROUGHT_PERCENT);
+                    int drought_condition = args.getInt(ARG_DROUGHT_COND);
                     rootView.findViewById(R.id.disasterBackground).setBackgroundResource(R.drawable.drought_background);
+                    riskStatus.setText(Html.fromHtml("<b>" + drought_percent + "%</b> of " + city + " is in " + AlarmReceiver.droughtLevelTitles[drought_condition]));
+                    riskStatus.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PopupUtils.showPopup(getActivity(), "We are currently working on improving your risk analysis!");
+                        }
+                    });
                     break;
                 case "Earthquake":
                     rootView.findViewById(R.id.disasterBackground).setBackgroundResource(R.drawable.bg_earthquake);
+                    riskStatus.setClickable(true);
+
+                    riskStatus.setText("How far are you from a fault zone?");
+                    riskStatus.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Uri uri = Uri.parse("http://www.redtreesoft.com/google/");
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(intent);
+                            DisplayDisastersActivity.goToDisasterNumber = args.getInt(ARG_DISASTER_NUMBER);
+                        }
+                    });
+//                    riskStatus.setText(Html.fromHtml("<a style='text-decoration:none; color: rgb(0,0,0);' href=''>How far are you from a fault zone?</a>"));
                     break;
                 case "Wildfire":
                     rootView.findViewById(R.id.disasterBackground).setBackgroundResource(R.drawable.bg_wildfire);
+                    riskStatus.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PopupUtils.showPopup(getActivity(), "We are currently working on improving your risk analysis!");
+                        }
+                    });
                     break;
                 default:
                     break;
@@ -250,15 +296,13 @@ public class DisplayDisastersActivity extends ActionBarActivity {
             if(impactView == null){
                 Log.d("impactView", "NULL from mylaunchpadSectionFragment");
             }
-//            if(factView == null){
-//                Log.d("factView", "NULL from mylaunchpadSectionFragment");
-//            }
+
             setOnClickListener(impactView, adapt1);// = (AnimatedExpandableListView) rootView.findViewById(R.id.explist2);
-//            setOnClickListener(factView, adapt2);
+
 
             ImageView leftArrow = (ImageView) rootView.findViewById(R.id.riskscreen_left);
             ImageView rightArrow = (ImageView) rootView.findViewById(R.id.riskscreen_right);
-            if(args.getInt(ARG_DISASTER_NUMBER) == 1 ){
+            if(args.getInt(ARG_DISASTER_NUMBER) == 0 ){
                 leftArrow.setVisibility(View.GONE);
             }
             if(args.getInt(ARG_DISASTER_NUMBER) == args.getInt(ARG_TOTAL_DISASTERS)){
@@ -268,18 +312,19 @@ public class DisplayDisastersActivity extends ActionBarActivity {
             lArrow = leftArrow;
             rArrow = rightArrow;
 
-            TextView checklistPreview = (TextView)rootView.findViewById(R.id.checkListDescription);
+            ImageView checklistPreview = (ImageView)rootView.findViewById(R.id.checklist_icon);
             checklistPreview.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                        Log.d("Passing disaster #", " to checklist " + args.getInt(ARG_DISASTER_NUMBER));
                         Intent intent = new Intent(v.getContext(), DisplayChecklistActivityWithFragment.class);
-                        startActivity(intent);
+                        intent.putExtra(ARG_DISASTER_NUMBER, args.getInt(ARG_DISASTER_NUMBER));
+                        startActivityForResult(intent, 1);
+//                        startActivity(intent);
                 }
             });
-
-            checklistPreview.setText((int)(100*((double)args.getInt(CHECKLIST_COMPLETED)/args.getInt(CHECKLIST_TOTAL))) + "% Complete");
-
-
+            TextView checklistPercent = (TextView)rootView.findViewById(R.id.checklist_percent_disaster);
+            checklistPercent.setText(Html.fromHtml("<b>" + (int)(100*((double)args.getInt(CHECKLIST_COMPLETED)/args.getInt(CHECKLIST_TOTAL))) + "%<b>"));
 
 //            CustomGauge gauge = (CustomGauge) rootView.findViewById(R.id.gaugeForRisk);
 //            gauge.setValue(args.getInt(ARG_DROUGHT_PERCENT));
@@ -363,7 +408,7 @@ public class DisplayDisastersActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main_activity, menu);
+        getMenuInflater().inflate(R.menu.menu_main_without_profile, menu);
         super.onCreateOptionsMenu(menu);
         return true;
     }
@@ -375,17 +420,8 @@ public class DisplayDisastersActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if(id == R.id.action_profile){
-            try{
-                Intent intent = new Intent(this, LineChartActivity2.class);
-                startActivity(intent);
-
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-        }
         //noinspection SimplifiableIfStatement
-        else if (id == R.id.action_settings) {
+        if (id == R.id.action_settings) {
             // Set the text view as the activity layout
             try{
                 // We need to get the instance of the LayoutInflater, use the context of this activity
@@ -427,9 +463,9 @@ public class DisplayDisastersActivity extends ActionBarActivity {
 
 
     public void goToChecklist(View view){
+        view.startAnimation(AnimationUtils.loadAnimation(view.getContext(), R.anim.image_anim));
         Intent intent = new Intent(this, DisplayChecklistActivityWithFragment.class);
         startActivity(intent);
-
     }
 
     private class DisplayInfo extends AsyncTask<String, String, String>{
@@ -458,7 +494,7 @@ public class DisplayDisastersActivity extends ActionBarActivity {
 //                Log.d("Checking result:", jsonObject.toString());
                 for(int i = 0; i < jsonObjects.length; i++){
                     jsonObjects[i] = jsonParser.makeHttpGetRequest(POPULATE_CHECKLIST_URL, DisplayChecklistActivityWithFragment.DISASTER_TYPE, StringUtils.disasterTypes[i]);
-                    Log.d("Checking result:", jsonObjects[i].toString());
+//                    Log.d("Checking result:", jsonObjects[i].toString());
                 }
 
             } catch(Exception e){
@@ -517,29 +553,30 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                         groupItems = new ArrayList<GroupItem>();
 /******************MY RISK STATUS************************************************/
 
-                        System.out.println("Checking Location to put in Disasters Page " + disasterIndex);
+//                        System.out.println("Checking Location to put in Disasters Page " + disasterIndex);
 //                            if(sharedPreferences.contains(AlarmReceiver.TAG_ZIP)
 //                                    && sharedPreferences.contains(AlarmReceiver.TAG_NEW_DROUGHT_CONDITION)
 //                                    && sharedPreferences.contains(AlarmReceiver.TAG_NEW_DROUGHT_PERCENT)){
-                        Log.d("SYSTEM_PREFERENCES", " does contain zip, condition, and percent");
-                        String zip = sharedPreferences.getString(AlarmReceiver.TAG_ZIP, "00000");
-                        String city = sharedPreferences.getString(AlarmReceiver.TAG_CITY, "Cupertino");
-                        String state = sharedPreferences.getString(AlarmReceiver.TAG_STATE, "California");
-                        int drought_condition = sharedPreferences.getInt(AlarmReceiver.TAG_NEW_DROUGHT_CONDITION, 0);
+//                        Log.d("SYSTEM_PREFERENCES", " does contain zip, condition, and percent");
+//                        String zip = sharedPreferences.getString(AlarmReceiver.TAG_ZIP, "00000");
+//                        String city = sharedPreferences.getString(AlarmReceiver.TAG_CITY, "Cupertino");
+//                        String state = sharedPreferences.getString(AlarmReceiver.TAG_STATE, "California");
+//                        int drought_condition = sharedPreferences.getInt(AlarmReceiver.TAG_NEW_DROUGHT_CONDITION, 0);
                         float drought_percent = sharedPreferences.getFloat(AlarmReceiver.TAG_NEW_DROUGHT_PERCENT, 0);
 
-                        GroupItem groupItem = new GroupItem(city + ", " + state + " " + zip );
-                        groupItem.setHeadLabel("MY RISK STATUS");
-                        groupItem.setSubheader("");
-                        List<ChildItem> items = new ArrayList<ChildItem>();
-                        items.add(new ChildItem(AlarmReceiver.droughtLevelTitles[drought_condition]));
-                        items.add(new ChildItem(drought_percent + "% of my area in drought"));
-                        groupItem.setChildren(items);
-                        groupItems.add(groupItem);
+//                        GroupItem groupItem = new GroupItem(city + ", " + state + " " + zip );
+//                        groupItem.setHeadLabel("MY RISK STATUS");
+//                        groupItem.setSubheader("");
+//                        List<ChildItem> items = new ArrayList<ChildItem>();
+//                        items.add(new ChildItem(AlarmReceiver.droughtLevelTitles[drought_condition]));
+//                        items.add(new ChildItem(drought_percent + "% of my area in drought"));
+//                        groupItem.setChildren(items);
+//                        groupItems.add(groupItem);
 //                            }
-
+                        GroupItem groupItem;
+                        List<ChildItem> items;
 /******************END OF MY RISK STATUS************************************************/
-                        System.out.println("Length of products: " + products.length());
+//                        System.out.println("Length of products: " + products.length());
                         for(int i = 0; i < products.length(); i++){
                             JSONObject object = products.getJSONObject(i);
 
@@ -551,7 +588,7 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                             String link = object.getString(TAG_LINK);
 
                             if(!StringUtils.stringIsEmpty(impact)){
-                                System.out.println("Impact: " + impact);
+//                                System.out.println("Impact: " + impact);
 //                            listDataHeader.add(im);
 //                            impacts.add(impact);
 //                            listDataChild.put(im, impacts);
@@ -569,7 +606,7 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                             }
 
                             if(!StringUtils.stringIsEmpty(fact)){
-                                System.out.println("Fact: " + fact);
+//                                System.out.println("Fact: " + fact);
 //                                groupItems = new ArrayList<GroupItem>();
 //                            listDataHeader.add(TAG_FACT);
 //                            facts.add(fact);
@@ -590,10 +627,10 @@ public class DisplayDisastersActivity extends ActionBarActivity {
                     }
                     editor.commit();
 
-                    mAppSectionsPagerAdapter = new MyAppSectionsPagerAdapter(getSupportFragmentManager(), impactAdapters, myLists);
+                    mAppSectionsPagerAdapter = new MyAppSectionsPagerAdapter(getSupportFragmentManager(), impactAdapters, myLists, sharedPreferences);
                     mViewPager = (ViewPager) findViewById(R.id.pager_disasters);
                     mViewPager.setAdapter(mAppSectionsPagerAdapter);
-
+                    mViewPager.setCurrentItem(goToDisasterNumber);
                 }
             }
             catch(Exception e){

@@ -1,5 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="TypefacedTextView">
-        <attr name="typeface" format="string" />
-    </declare-styleable>
+<!--CircularImageView-->
+<declare-styleable name="MyImageView">
+    <attr name="mborder" format="boolean"></attr>
+    <attr name="mborder_width" format="dimension"></attr>
+    <attr name="mborder_color" format="color"></attr>
+    <attr name="mshadow" format="boolean"></attr>
+    <attr name="mshape" format="string"></attr>
+</declare-styleable>
+
+<declare-styleable name="Theme">
+    <attr name="myImageViewStyle" format="reference"></attr>
+</declare-styleable>
+
+<!---TypefacedTextview-->
+<declare-styleable name="TypefacedTextView">
+    <attr name="typeface" format="string" />
+</declare-styleable>
+
 </resources>

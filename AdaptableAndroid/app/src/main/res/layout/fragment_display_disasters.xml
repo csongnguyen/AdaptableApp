@@ -1,5 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:gauge="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:id="@+id/disasterBackground"
@@ -14,6 +14,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
         android:id="@+id/disasterTitle"
+        android:text="Disaster"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|top"
@@ -22,52 +23,117 @@
         my_namespace:typeface="Roboto-Regular.ttf"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="10dp" />
     <!--android:layout_weight="15"-->
 
     <RelativeLayout
         android:id="@+id/checklist_description_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/disasterTitle">
+        android:layout_below="@id/disasterTitle"
+        android:layout_marginTop="15dp">
 
-        <com.adaptableandroid.TypefacedTextView
-            xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
-            android:id="@+id/checklistHeadLabel"
-            android:text="CHECKLIST"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="1dip"
-            android:paddingTop="5dp"
-            android:textColor="#FFF"
-            android:textSize="16sp"
-            my_namespace:typeface="Roboto-Black.ttf"
-            android:layout_marginLeft="21dp"
-            />
-        <!--android:layout_marginLeft="50dp"-->
-        <!--android:layout_marginRight="50dp"-->
+        <RelativeLayout
+            android:layout_width="125dp"
+            android:layout_height="150dp"
+            android:layout_marginLeft="46dp">
 
-        <com.adaptableandroid.TypefacedTextView
-            xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
-            android:id="@+id/checkListDescription"
-            android:text="45% Complete"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:paddingTop="15dp"
-            android:paddingBottom="15dp"
-            android:textColor="#0D81FF"
-            my_namespace:typeface="Roboto-Medium.ttf"
-            android:alpha="0.68"
-            android:textSize="15sp"
-            android:layout_marginLeft="21dp"
-            android:layout_marginRight="21dp"
-            android:background="@drawable/disaster_box_layout"
-            android:layout_below="@id/checklistHeadLabel"
-            />
-        <!--android:background="#FFF"-->
+            <com.adaptableandroid.TypefacedTextView
+                xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+                android:id="@+id/checklistHeadLabel"
+                android:text="CHECKLIST"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFF"
+                android:textSize="16sp"
+                my_namespace:typeface="Roboto-Black.ttf"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                />
+            <!--android:layout_marginLeft="50dp"-->
+            <!--android:layout_marginRight="50dp"-->
 
+            <com.adaptableandroid.MyImageView
+                android:id="@+id/checklist_icon"
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:src="@drawable/checklist_icon"
+                android:layout_alignParentBottom="true"
+                app:mborder_color="@color/white"
+                app:mborder_width="0dp"
+                app:mshadow="true"
+                />
+
+            <com.adaptableandroid.TypefacedTextView
+                xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+                android:id="@+id/checklist_percent_disaster"
+                android:text="45% "
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                my_namespace:typeface="Roboto-Medium.ttf"
+                android:textSize="14sp"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="105dp"
+                android:textStyle="bold"
+                />
+            <!--android:textColor="#0D81FF"-->
+
+            <com.adaptableandroid.TypefacedTextView
+                xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+                android:text="COMPLETE "
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                my_namespace:typeface="Roboto-Medium.ttf"
+                android:textSize="12sp"
+                android:layout_below="@id/checklist_percent_disaster"
+                android:layout_centerHorizontal="true"
+                android:textStyle="bold"
+                />
+            <!--android:layout_marginLeft="21dp"-->
+            <!--android:layout_marginRight="21dp"-->
+            <!--android:background="@drawable/disaster_box_layout"-->
+            <!--android:layout_below="@id/checklistHeadLabel"-->
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="125dp"
+            android:layout_height="150dp"
+            android:layout_marginRight="46dp"
+            android:layout_alignParentRight="true">
+
+            <com.adaptableandroid.TypefacedTextView
+                xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+                android:text="MY STATUS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFF"
+                android:textSize="16sp"
+                my_namespace:typeface="Roboto-Black.ttf"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                />
+
+            <com.adaptableandroid.TypefacedTextView
+                xmlns:my_namespace="http://schemas.android.com/apk/res/com.adaptableandroid"
+                my_namespace="Roboto-Regular.ttf"
+                android:id="@+id/my_risk_status_text"
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:text="My current risk levels"
+                android:textColor="#000"
+                android:textSize="14sp"
+                android:background="@drawable/disaster_box_layout_og"
+                android:alpha="0.68"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                />
+        </RelativeLayout>
     </RelativeLayout>
 
     <!--<pl.pawelkleczkowski.customgauge.CustomGauge-->

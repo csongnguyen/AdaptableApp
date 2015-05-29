@@ -22,6 +22,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -65,7 +66,6 @@ import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends ActionBarActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     public static int TEST_TIME_OUT = 3000;
-    public final static String EXTRA_MESSAGE = "com.example.connie.myfirstapp.MESSAGE";
     private LocationManager locationManager;
     private String bestProvider;
     private String location;
@@ -125,19 +125,8 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
 
         TextView advisoryWarningText = (TextView) findViewById(R.id.advisory_warning);
-        advisoryWarningText.setText("You are at very high risk of being affected by Drought. Please check your risk status below.");
+        advisoryWarningText.setText(Html.fromHtml("Drought Advisory <br><small> Emergency water restrictions declared.</small>"));
 
-        CircularImageView droughtView = (CircularImageView) findViewById(R.id.imageView);
-        droughtView.setBorderColor(getResources().getColor(R.color.GrayLight));
-        droughtView.setBorderWidth(10);
-        droughtView.addShadow();
-
-        droughtView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToDisasters(v);
-            }
-        });
         buildGoogleApiClient();
 
         String consumerKey = "OG3xipNKmjVDwN2aaoRiMDTPv";
@@ -145,27 +134,7 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         TwitterAuthConfig authConfig =  new TwitterAuthConfig(consumerKey, consumerSecret);
         Fabric.with(this, new TwitterCore(authConfig), new TweetUi());
 
-
-//        MyTweet myTweet = new MyTweet();
-//        myTweet.author = "dbradby";
-//        myTweet.content = "Android in space";
-//        ArrayList<MyTweet> items = new ArrayList<MyTweet>();
-//        items.add(myTweet);
-//        myTweet = new MyTweet();
-//        myTweet.author = "bar";
-//        myTweet.content = "Android in space 2";
-//        items.add(myTweet);
-//
-//        TweetListAdaptor adaptor = new TweetListAdaptor(this,R.layout.tweet_list_item, items);
-//        setListAdapter(adaptor);
-        tweetAdapter =
-                new TweetViewFetchAdapter<CompactTweetView>(
-                        MainActivity.this);
-        new GetTweets().execute();
-
     }
-
-
 
     private void setListAdapter(TweetViewFetchAdapter adapt){
         ListView listTask = (ListView) findViewById(R.id.tweetListView);
@@ -178,13 +147,13 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
     public void onStart(){
         super.onStart();
 
-        mGoogleApiClient.connect();
-
-        AlarmService alarmService = new AlarmService(getBaseContext());
-        alarmService.startAlarm();
-//        setAlarm();
-
         if(!isNetworkAvailable()){return;}
+        else{
+            mGoogleApiClient.connect();
+
+            AlarmService alarmService = new AlarmService(getBaseContext());
+            alarmService.startAlarm();
+        }
 
 //        expListView = (AnimatedExpandableListView) findViewById(R.id.lvExp);
 //        expListView.setGroupIndicator(null);
@@ -202,53 +171,46 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 //        else{
 //            addImpactAndFactWithGroupItem(sharedPreferences);
 //        }
-//
-//        expListView.setOnGroupClickListener(new AnimatedExpandableListView.OnGroupClickListener() {
-//            int lastView = -1;
-//
-//            @Override
-//            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id){
-//                // call collapseGroupWithAnimation(int) and expandGroupWithAnimation(int)
-//                // to animate group expansion/collapse.
-//                if(expListView.isGroupExpanded(groupPosition)){
-//                    expListView.collapseGroupWithAnimation(groupPosition);
-//                }else{
-//                    if(lastView != -1){
-//                        expListView.collapseGroupWithAnimation(lastView);
-//                    }
-//
-//                    expListView.expandGroupWithAnimation(groupPosition);
-//                    lastView = groupPosition;
-//                }
-//                return true;
-//            }
-//
-//        });
-//        expListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-//            @Override
-//            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-//                expListView.collapseGroupWithAnimation(groupPosition);
-//                return true;
-//            }
-//        });
+
     }
 
-    private void setExpandableListAdapter(){
-        //                    explistAdapter = new ExpandableListAdapter(MainActivity.this, listDataHeader, listDataChild);
-        expListView = (AnimatedExpandableListView) findViewById(R.id.lvExp);
-        expListView.setGroupIndicator(null);
-        explistAdapter = new ExpandableListAdapter(MainActivity.this, groupItems, "", 0);
-        expListView.setAdapter(explistAdapter);
-    }
+//    private void setExpandableListAdapter(){
+//        //                    explistAdapter = new ExpandableListAdapter(MainActivity.this, listDataHeader, listDataChild);
+//        expListView = (AnimatedExpandableListView) findViewById(R.id.lvExp);
+//        expListView.setGroupIndicator(null);
+//        explistAdapter = new ExpandableListAdapter(MainActivity.this, groupItems, "", 0);
+//        expListView.setAdapter(explistAdapter);
+//    }
 
     @Override
     public void onConnected(Bundle connectionHint){
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (mLastLocation != null) {
+        pDialog = new ProgressDialog(MainActivity.this);
+        pDialog.setMessage("Attempting to update...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(true);
+        pDialog.show();
+        Address currAddr =  null;
+        while(currAddr == null && mLastLocation == null){
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+            if(mLastLocation != null){
+                currAddr = LocationUtils.getAddress(this,mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            }
+        }
+        if (currAddr != null) {
+
             location = String.valueOf(mLastLocation.getLatitude());
 //            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
 //            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+            Log.d("ADDR", currAddr.getLocality());
+
+            TextView locationText = (TextView) findViewById(R.id.location_in_main);
+            locationText.setText(currAddr.getLocality() + ", " + currAddr.getAdminArea());
+
+            tweetAdapter =
+                    new TweetViewFetchAdapter<CompactTweetView>(
+                            MainActivity.this);
+            new GetTweets().execute();
         }
     }
 
@@ -268,6 +230,8 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
 
         // More about this in the next section.
         Log.e("GOOGLE_API_CLIENT", "Failed to connect");
+        Toast.makeText(getApplicationContext(), "TWe failed to find your connection :( ", Toast.LENGTH_LONG).show();
+
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -285,33 +249,33 @@ public class MainActivity extends ActionBarActivity implements GoogleApiClient.C
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    private void addImpactAndFactWithGroupItem(SharedPreferences sp){
-        String impact = sp.getString(TAG_IMPACT, NOTHING_TO_DISPLAY);
-        String fact = sp.getString(TAG_FACT, NOTHING_TO_DISPLAY);
-        groupItems = new ArrayList<GroupItem>();
-        if(!StringUtils.stringIsEmpty(impact)){
-            System.out.println("Impact: " + impact);
-
-            GroupItem groupItem = new GroupItem(IMPACT_TITLE);
-            List<ChildItem> items = new ArrayList<ChildItem>();
-            items.add(new ChildItem(impact));
-            groupItem.setChildren(items);
-            groupItems.add(groupItem);
-        }
-
-        if(!StringUtils.stringIsEmpty(fact)){
-            System.out.println("Fact: " + fact);
-
-            GroupItem groupItem = new GroupItem(FACT_TITLE);
-            List<ChildItem> items = new ArrayList<ChildItem>();
-            items.add(new ChildItem(fact));
-            groupItem.setChildren(items);
-            groupItems.add(groupItem);
-        }
-        setExpandableListAdapter();
-//        explistAdapter = new ExpandableListAdapter(this, groupItems);
-//        expListView.setAdapter(explistAdapter);
-    }
+//    private void addImpactAndFactWithGroupItem(SharedPreferences sp){
+//        String impact = sp.getString(TAG_IMPACT, NOTHING_TO_DISPLAY);
+//        String fact = sp.getString(TAG_FACT, NOTHING_TO_DISPLAY);
+//        groupItems = new ArrayList<GroupItem>();
+//        if(!StringUtils.stringIsEmpty(impact)){
+//            System.out.println("Impact: " + impact);
+//
+//            GroupItem groupItem = new GroupItem(IMPACT_TITLE);
+//            List<ChildItem> items = new ArrayList<ChildItem>();
+//            items.add(new ChildItem(impact));
+//            groupItem.setChildren(items);
+//            groupItems.add(groupItem);
+//        }
+//
+//        if(!StringUtils.stringIsEmpty(fact)){
+//            System.out.println("Fact: " + fact);
+//
+//            GroupItem groupItem = new GroupItem(FACT_TITLE);
+//            List<ChildItem> items = new ArrayList<ChildItem>();
+//            items.add(new ChildItem(fact));
+//            groupItem.setChildren(items);
+//            groupItems.add(groupItem);
+//        }
+//        setExpandableListAdapter();
+////        explistAdapter = new ExpandableListAdapter(this, groupItems);
+////        expListView.setAdapter(explistAdapter);
+//    }
 
 //    public void addImpactAndFact(){
 //        System.out.println("RECREATING VIEW");
@@ -421,9 +385,8 @@ public boolean onOptionsItemSelected(MenuItem item) {
     }
 
     public void goToDisasters(View view){
-        view.startAnimation(AnimationUtils.loadAnimation(view.getContext(), R.anim.image_anim));
+        view.startAnimation(AnimationUtils.loadAnimation(view.getContext(), R.anim.move_right_out_activity));
         Intent intent = new Intent(this, DisplayDisastersActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, "Hello, there");
         startActivity(intent);
 
     }
@@ -437,12 +400,9 @@ public boolean onOptionsItemSelected(MenuItem item) {
     public void createNotification(){
         //Prepare intent which is triggered
         // if the notification is selected
-//        Intent intent = new Intent(this, MainActivity.class);
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
-
-
 
         NotificationCompat.Builder mBuilder =
         new NotificationCompat.Builder(this)
@@ -549,54 +509,36 @@ public boolean onOptionsItemSelected(MenuItem item) {
 //        }
 //    }
 
-//    private class TweetListAdaptor extends ArrayAdapter<MyTweet> {
-//
-//        private ArrayList<MyTweet> myTweets;
-//
-//        public TweetListAdaptor(Context context,
-//                                int textViewResourceId,
-//                                ArrayList<MyTweet> items) {
-//            super(context, textViewResourceId, items);
-//            this.myTweets = items;
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//            View v = convertView;
-//            if (v == null) {
-//                LayoutInflater vi = (LayoutInflater) getSystemService
-//                        (Context.LAYOUT_INFLATER_SERVICE);
-//                v = vi.inflate(R.layout.tweet_list_item, null);
-//            }
-//            MyTweet o = myTweets.get(position);
-//            TextView tt = (TextView) v.findViewById(R.id.toptext);
-//            TextView bt = (TextView) v.findViewById(R.id.bottomtext);
-//            tt.setText(o.content);
-//            bt.setText(o.author);
-//
-//            return v;
-//        }
-//    }
 
     private class GetTweets extends AsyncTask<String, String, String>{
-        private static final String URL = "http://ec2-54-149-172-15.us-west-2.compute.amazonaws.com/connectToTwitter.php";
+
+        private String URL = "http://ec2-54-149-172-15.us-west-2.compute.amazonaws.com/connectToTwitter.php";
         JSONObject jsonObject;
 
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Attempting to update...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
-            pDialog.show();
+            if(pDialog == null){
+                pDialog = new ProgressDialog(MainActivity.this);
+                pDialog.setMessage("Attempting to update...");
+                pDialog.setIndeterminate(false);
+                pDialog.setCancelable(true);
+                pDialog.show();
+            }
+
         }
 
         @Override
         protected String doInBackground(String... urls){
             // Check for success tag
             int success;
+
             try{
+                double longitude = mLastLocation.getLongitude();
+                double latitude = mLastLocation.getLatitude();
+
+                URL = URL + "?longitude=" + longitude + "&latitude=" + latitude + "&radius=10km";
+                Log.d("URL ", "Get Tweets in MainActivity: " + URL);
 //                Log.d("Impact and Fact Request", "Starting");
                 jsonObject = jsonParser.getJSONFromURL(URL);
 //                Log.d("Checking result:", jsonObject.toString());
@@ -650,100 +592,100 @@ public boolean onOptionsItemSelected(MenuItem item) {
         }
     }
 
-    private class DisplayInfo extends AsyncTask<String, String, String>{
-        private static final String IMPACTS_URL = "http://ec2-54-149-172-15.us-west-2.compute.amazonaws.com/grabImpacts.php";
-        JSONObject jsonObject;
-
-        @Override
-        protected void onPreExecute(){
-            super.onPreExecute();
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Attempting to update...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(true);
-            pDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... urls){
-            // Check for success tag
-            int success;
-            try{
-//                Log.d("Impact and Fact Request", "Starting");
-                jsonObject = jsonParser.getJSONFromURL(IMPACTS_URL);
-//                Log.d("Checking result:", jsonObject.toString());
-
-            } catch(Exception e){
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String someString){
-            try {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    public void run() {
-                        pDialog.dismiss();
-                    }}, 1000);  // 1000 milliseconds
-                if(jsonObject == null){
-                    System.out.println("jsonObject is null");
-                }
-                if(jsonObject != null && !jsonObject.toString().isEmpty()){
-                    products = jsonObject.getJSONArray("Drought");
-                    // groups will be impact, facts, restrictions (these are the headers)
-                    // in each group, what we grab from json is what we will display
-
-                    for(int i = 0; i < products.length(); i++){
-                        JSONObject object = products.getJSONObject(i);
-
-                        String id = object.getString(TAG_ID);
-                        String impact = object.getString(TAG_IMPACT);
-                        String link = object.getString(TAG_LINK);
-                        String fact = object.getString(TAG_FACT);
-
-                        SharedPreferences.Editor editor = getSharedPreferences(StringUtils.MYPREFERENCES, Context.MODE_PRIVATE).edit();
-                        editor.putString(alreadyUpdated, "already Updated");
-
-                        if(!StringUtils.stringIsEmpty(impact)){
-                            System.out.println("Impact: " + impact);
-//                            listDataHeader.add(im);
-//                            impacts.add(impact);
-//                            listDataChild.put(im, impacts);
-                            GroupItem groupItem = new GroupItem(IMPACT_TITLE);
-                            List<ChildItem> items = new ArrayList<ChildItem>();
-                            items.add(new ChildItem(impact));
-
-                            groupItem.setChildren(items);
-                            groupItems.add(groupItem);
-
-                            editor.putString(TAG_IMPACT, impact);
-
-                        }
-
-                        if(!StringUtils.stringIsEmpty(fact)){
-                            System.out.println("Fact: " + fact);
-//                            listDataHeader.add(TAG_FACT);
-//                            facts.add(fact);
-//                            listDataChild.put(TAG_FACT, facts);
-                            GroupItem groupItem = new GroupItem(FACT_TITLE);
-                            List<ChildItem> items = new ArrayList<ChildItem>();
-                            items.add(new ChildItem(fact));
-                            groupItem.setChildren(items);
-                            groupItems.add(groupItem);
-
-                            editor.putString(TAG_FACT, fact);
-                        }
-                        editor.commit();
-                    }
-
-                    setExpandableListAdapter();
-                }
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-        }
-    }
+//    private class DisplayInfo extends AsyncTask<String, String, String>{
+//        private static final String IMPACTS_URL = "http://ec2-54-149-172-15.us-west-2.compute.amazonaws.com/grabImpacts.php";
+//        JSONObject jsonObject;
+//
+//        @Override
+//        protected void onPreExecute(){
+//            super.onPreExecute();
+//            pDialog = new ProgressDialog(MainActivity.this);
+//            pDialog.setMessage("Attempting to update...");
+//            pDialog.setIndeterminate(false);
+//            pDialog.setCancelable(true);
+//            pDialog.show();
+//        }
+//
+//        @Override
+//        protected String doInBackground(String... urls){
+//            // Check for success tag
+//            int success;
+//            try{
+////                Log.d("Impact and Fact Request", "Starting");
+//                jsonObject = jsonParser.getJSONFromURL(IMPACTS_URL);
+////                Log.d("Checking result:", jsonObject.toString());
+//
+//            } catch(Exception e){
+//                e.printStackTrace();
+//            }
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String someString){
+//            try {
+//                Handler handler = new Handler();
+//                handler.postDelayed(new Runnable() {
+//                    public void run() {
+//                        pDialog.dismiss();
+//                    }}, 1000);  // 1000 milliseconds
+//                if(jsonObject == null){
+//                    System.out.println("jsonObject is null");
+//                }
+//                if(jsonObject != null && !jsonObject.toString().isEmpty()){
+//                    products = jsonObject.getJSONArray("Drought");
+//                    // groups will be impact, facts, restrictions (these are the headers)
+//                    // in each group, what we grab from json is what we will display
+//
+//                    for(int i = 0; i < products.length(); i++){
+//                        JSONObject object = products.getJSONObject(i);
+//
+//                        String id = object.getString(TAG_ID);
+//                        String impact = object.getString(TAG_IMPACT);
+//                        String link = object.getString(TAG_LINK);
+//                        String fact = object.getString(TAG_FACT);
+//
+//                        SharedPreferences.Editor editor = getSharedPreferences(StringUtils.MYPREFERENCES, Context.MODE_PRIVATE).edit();
+//                        editor.putString(alreadyUpdated, "already Updated");
+//
+//                        if(!StringUtils.stringIsEmpty(impact)){
+//                            System.out.println("Impact: " + impact);
+////                            listDataHeader.add(im);
+////                            impacts.add(impact);
+////                            listDataChild.put(im, impacts);
+//                            GroupItem groupItem = new GroupItem(IMPACT_TITLE);
+//                            List<ChildItem> items = new ArrayList<ChildItem>();
+//                            items.add(new ChildItem(impact));
+//
+//                            groupItem.setChildren(items);
+//                            groupItems.add(groupItem);
+//
+//                            editor.putString(TAG_IMPACT, impact);
+//
+//                        }
+//
+//                        if(!StringUtils.stringIsEmpty(fact)){
+//                            System.out.println("Fact: " + fact);
+////                            listDataHeader.add(TAG_FACT);
+////                            facts.add(fact);
+////                            listDataChild.put(TAG_FACT, facts);
+//                            GroupItem groupItem = new GroupItem(FACT_TITLE);
+//                            List<ChildItem> items = new ArrayList<ChildItem>();
+//                            items.add(new ChildItem(fact));
+//                            groupItem.setChildren(items);
+//                            groupItems.add(groupItem);
+//
+//                            editor.putString(TAG_FACT, fact);
+//                        }
+//                        editor.commit();
+//                    }
+//
+//                    setExpandableListAdapter();
+//                }
+//            }
+//            catch(Exception e){
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 }

@@ -3,7 +3,7 @@
     >
 
     <item android:id="@+id/action_profile"
-        android:icon="@drawable/user_profile_default"
+        android:icon="@drawable/profile_icon"
         android:title="@string/action_profile"
         myapp:showAsAction="ifRoom|collapseActionView"
         />

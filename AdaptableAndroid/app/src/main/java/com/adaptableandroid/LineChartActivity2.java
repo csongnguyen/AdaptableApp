@@ -2,6 +2,7 @@ package com.adaptableandroid;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +25,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -70,6 +72,7 @@ public class LineChartActivity2 extends ActionBarActivity implements OnSeekBarCh
 //    private SeekBar mSeekBarX, mSeekBarY;
 //    private TextView tvX, tvY;
     private boolean scrolling = false; // Scrolling flag
+    private Activity activity = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +92,24 @@ public class LineChartActivity2 extends ActionBarActivity implements OnSeekBarCh
         TextView tView = (TextView) getSupportActionBar().getCustomView().findViewById(R.id.actionbarTitle);
         tView.setText("Adaptable");
 
+        /***** USER PROFILES ON CLICK *******/
+        LinearLayout facebook_users_layout = (LinearLayout) findViewById(R.id.facebook_users_layout);
+        facebook_users_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupUtils.showPopup(activity, "User profile coming soon!");
+            }
+        });
+
+        Button viewAll = (Button) findViewById(R.id.view_all_contacts_button);
+        viewAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupUtils.showPopup(activity, "Soon, you will see all your friends' and family's level of risk!");
+            }
+        });
+
+        /***** END OF USER PROFILES ON CLICK *******/
         /*************************WHEEL PICKER **********************************/
         final WheelView disasterWheel = (WheelView) findViewById(R.id.disasterWheelPicker);
         disasterWheel.setVisibleItems(3);
@@ -116,6 +137,15 @@ public class LineChartActivity2 extends ActionBarActivity implements OnSeekBarCh
             public void onScrollingFinished(WheelView wheel) {
                 scrolling = false;
                 updateChecklistPreview(myLists, disasterWheel.getCurrentItem());
+            }
+        });
+        LinearLayout checklistPreview = (LinearLayout) findViewById(R.id.checklistPreviewInUserProfile);
+        checklistPreview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), DisplayChecklistActivityWithFragment.class);
+                intent.putExtra(DisplayDisastersActivity.MyLaunchpadSectionFragment.ARG_DISASTER_NUMBER, disasterWheel.getCurrentItem());
+                startActivity(intent);
             }
         });
         /******************************************************************************/
@@ -233,33 +263,7 @@ public class LineChartActivity2 extends ActionBarActivity implements OnSeekBarCh
 
 
 /***************************************************************/
-                // We need to get the instance of the LayoutInflater, use the context of this activity
-                LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-                //Inflate the view from a predefined XML layout
-                View layout = inflater.inflate(R.layout.popup_layout, (ViewGroup) findViewById(R.id.popup_element));
-
-                // create a 300px width and 470px height PopupWindow
-                final PopupWindow pw = new PopupWindow(layout, 400, 400, true);
-                pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
-
-                // Create the text view
-                TextView mResultText = (TextView) layout.findViewById(R.id.popup_text);
-                mResultText.setText("Settings will be coming soon!");
-                Button cancelButton = (Button) layout.findViewById(R.id.end_data_send_button);
-                cancelButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        pw.dismiss();
-                    }
-                });
-
-                ObjectAnimator fadeIn = ObjectAnimator.ofFloat(layout, "alpha", .3f, 1f);
-                fadeIn.setDuration(200);
-
-                final AnimatorSet mAnimationSet = new AnimatorSet();
-                mAnimationSet.play(fadeIn);
-                mAnimationSet.start();
+            PopupUtils.showPopup(this, "Settings will be coming soon!");
 
             }catch(Exception e){
                 e.printStackTrace();
@@ -269,6 +273,36 @@ public class LineChartActivity2 extends ActionBarActivity implements OnSeekBarCh
 
         return super.onOptionsItemSelected(item);
     }
+
+//    private void showPopup(Activity activity, String message){
+//        // We need to get the instance of the LayoutInflater, use the context of this activity
+//        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//
+//        //Inflate the view from a predefined XML layout
+//        View layout = inflater.inflate(R.layout.popup_layout, (ViewGroup) activity.findViewById(R.id.popup_element));
+//
+//        // create a 300px width and 470px height PopupWindow
+//        final PopupWindow pw = new PopupWindow(layout, 400, 400, true);
+//        pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
+//
+//        // Create the text view
+//        TextView mResultText = (TextView) layout.findViewById(R.id.popup_text);
+//        mResultText.setText(message);
+//        Button cancelButton = (Button) layout.findViewById(R.id.end_data_send_button);
+//        cancelButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                pw.dismiss();
+//            }
+//        });
+//
+//        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(layout, "alpha", .3f, 1f);
+//        fadeIn.setDuration(200);
+//
+//        final AnimatorSet mAnimationSet = new AnimatorSet();
+//        mAnimationSet.play(fadeIn);
+//        mAnimationSet.start();
+//    }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

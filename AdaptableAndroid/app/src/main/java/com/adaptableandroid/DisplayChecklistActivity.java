@@ -69,7 +69,6 @@ public class DisplayChecklistActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         setContentView(R.layout.activity_display_checklist);
 
 
